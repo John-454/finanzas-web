@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Contabilidad</title>
+  <link rel="stylesheet" href="../css/contabilidad.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="container">
+    <h1>Resumen General</h1>
+
+    <div class="resumen">
+      <div><strong>Total Vendido:</strong> <span id="totalVendido">$0</span></div>
+      <div><strong>Saldo Pendiente:</strong> <span id="totalSaldo">$0</span></div>
+    </div>
+
+    <canvas id="graficoGeneral" width="300" height="300"></canvas>
+
+    <hr>
+
+    <h2>Búsqueda por Cliente</h2>
+    <input
+      type="text"
+      id="busquedaCliente"
+      placeholder="Escriba el nombre del cliente"
+      oninput="buscarPorCliente()"
+    />
+
+    <div id="clienteResumen" class="oculto"></div>
+  </div>
+
+  <script src="../js/contabilidad.js"></script>
+</body>
+</html>

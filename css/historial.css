@@ -1,0 +1,88 @@
+/* Reset básico */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f0f2f5;
+  color: #333;
+  padding: 20px;
+}
+
+/* Contenedor principal */
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  background: #fff;
+  padding: 30px 25px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Título */
+.container h1 {
+  font-size: 28px;
+  font-weight: 600;
+  margin-bottom: 25px;
+  color: #2e2e2e;
+  text-align: center;
+}
+
+/* Campo de búsqueda */
+input[type="text"] {
+  width: 100%;
+  padding: 12px 15px;
+  margin-bottom: 25px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 16px;
+  transition: 0.2s ease;
+}
+
+input[type="text"]:focus {
+  border-color: #007bff;
+  outline: none;
+  box-shadow: 0 0 4px rgba(0, 123, 255, 0.3);
+}
+
+/* Sección de resultados */
+#resultados {
+  margin-top: 10px;
+}
+
+#resultados h2 {
+  font-size: 20px;
+  margin-bottom: 15px;
+  color: #444;
+  border-bottom: 2px solid #eee;
+  padding-bottom: 8px;
+}
+
+/* Estilo de cada abono */
+.abono-item {
+  background-color: #fafafa;
+  border: 1px solid #ddd;
+  border-left: 5px solid #007bff;
+  padding: 15px 20px;
+  margin-bottom: 15px;
+  border-radius: 8px;
+  transition: transform 0.2s ease;
+}
+
+.abono-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
+}
+
+.abono-item p {
+  margin-bottom: 5px;
+  font-size: 15px;
+  color: #555;
+}
+
+.abono-item p strong {
+  color: #222;
+}

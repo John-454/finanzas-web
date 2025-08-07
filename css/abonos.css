@@ -1,0 +1,203 @@
+/* Reset básico */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f5f7fa;
+  color: #333;
+  padding: 20px;
+  min-height: 100vh;
+}
+
+h1 {
+  text-align: center;
+  margin-bottom: 25px;
+  color: #2c3e50;
+}
+
+button {
+  padding: 6px 12px;
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+button:hover {
+  background-color: #388e3c;
+}
+
+
+/* Buscador */
+#busqueda {
+  display: block;
+  margin: 0 auto 30px auto;
+  padding: 12px 16px;
+  width: 100%;
+  max-width: 400px;
+  font-size: 16px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  transition: border-color 0.3s ease;
+}
+
+#busqueda:focus {
+  outline: none;
+  border-color: #3498db;
+}
+
+/* Lista de facturas */
+#listaFacturas {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.factura {
+  background-color: #fff;
+  border-left: 5px solid #3498db;
+  padding: 16px 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.factura-info {
+  flex: 1;
+}
+
+.factura-info p {
+  margin: 6px 0;
+}
+
+.factura .abonar-btn {
+  padding: 10px 16px;
+  background-color: #27ae60;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.3s ease;
+}
+
+.factura .abonar-btn:hover {
+  background-color: #219150;
+}
+
+.factura .cancelado {
+  background-color: #bdc3c7;
+  color: #2c3e50;
+  padding: 10px 16px;
+  border-radius: 6px;
+  font-weight: bold;
+}
+
+/* Modal */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.4);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background-color: #fff;
+  padding: 30px;
+  border-radius: 10px;
+  width: 100%;
+  max-width: 400px;
+  position: relative;
+  animation: fadeIn 0.3s ease;
+}
+
+.modal-content h2 {
+  margin-bottom: 20px;
+  color: #2c3e50;
+}
+
+.modal-content p {
+  margin-bottom: 10px;
+}
+
+.modal-content input {
+  width: 100%;
+  padding: 12px;
+  margin-top: 10px;
+  margin-bottom: 20px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 16px;
+}
+
+.modal-content button {
+  width: 100%;
+  padding: 12px;
+  background-color: #2980b9;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.modal-content button:hover {
+  background-color: #2471a3;
+}
+
+.close {
+  position: absolute;
+  top: 12px;
+  right: 14px;
+  font-size: 24px;
+  cursor: pointer;
+  color: #aaa;
+  transition: color 0.2s ease;
+}
+
+.close:hover {
+  color: #000;
+}
+
+/* Animación */
+@keyframes fadeIn {
+  from {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Responsive */
+@media (max-width: 500px) {
+  .modal-content {
+    width: 90%;
+  }
+
+  .factura {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .factura .abonar-btn, .factura .cancelado {
+    margin-top: 10px;
+  }
+}

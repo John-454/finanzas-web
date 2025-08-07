@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Abonos y Saldos</title>
+  <link rel="stylesheet" href="../css/abonos.css">
+</head>
+<body>
+
+  <h1>Gestión de Abonos</h1>
+
+  <input type="text" id="busqueda" placeholder="Buscar por cliente..." oninput="buscarCliente()" />
+
+  <div id="listaFacturas"></div>
+
+  <!-- Modal -->
+  <div id="modalAbono" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="cerrarModal()">&times;</span>
+      <h2>Registrar Abono</h2>
+      <p><strong>Cliente:</strong> <span id="modalCliente"></span></p>
+      <p><strong>Total:</strong> $<span id="modalTotal"></span></p>
+      <p><strong>Abonado:</strong> $<span id="modalAbonado"></span></p>
+      <p><strong>Saldo pendiente:</strong> $<span id="modalSaldo"></span></p>
+
+      <input type="number" id="nuevoAbono" placeholder="Ingrese monto del abono" />
+      <button id="guardarBtn" onclick="registrarAbono()">Guardar Abono</button>
+    </div>
+  </div>
+
+  <script src="../js/abonos.js"></script>
+</body>
+</html>

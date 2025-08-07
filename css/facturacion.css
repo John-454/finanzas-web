@@ -1,0 +1,71 @@
+.container {
+  max-width: 800px;
+  margin: auto;
+  padding: 2rem 1rem;
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: bold;
+}
+
+input[type="text"],
+input[type="number"] {
+  width: 100%;
+  padding: 0.8rem;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 1rem;
+}
+
+.table-container {
+  overflow-x: auto;
+  margin-bottom: 1.5rem;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+}
+
+thead {
+  background-color: #4CAF50;
+  color: white;
+}
+
+th, td {
+  text-align: left;
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+}
+
+.totales {
+  margin-bottom: 1.5rem;
+  font-size: 1.1rem;
+}
+
+.dropdown-list {
+  list-style: none;
+  margin-top: 0.5rem;
+  padding: 0;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background-color: white;
+  max-height: 150px;
+  overflow-y: auto;
+}
+
+.dropdown-list li {
+  padding: 0.5rem;
+  cursor: pointer;
+}
+
+.dropdown-list li:hover {
+  background-color: #f0f0f0;
+}

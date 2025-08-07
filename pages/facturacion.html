@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Facturación - App Finanzas</title>
+  <link rel="stylesheet" href="../css/styles.css" />
+  <link rel="stylesheet" href="../css/facturacion.css" />
+</head>
+<body>
+
+  <header class="main-header">
+    <h1>Facturación</h1>
+    <p>Genera una nueva factura</p>
+  </header>
+
+  <main class="container">
+    <!-- Nombre del cliente -->
+    <div class="form-group">
+      <label for="cliente">Cliente:</label>
+      <input type="text" id="cliente" placeholder="Nombre del cliente" />
+    </div>
+
+    <!-- Barra de búsqueda de productos -->
+    <div class="form-group">
+      <label for="busqueda">Buscar producto:</label>
+      <input type="text" id="busqueda" placeholder="Nombre del producto" oninput="buscarProducto()" />
+      <ul id="resultados" class="dropdown-list"></ul>
+    </div>
+
+    <!-- Tabla de productos seleccionados -->
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>Producto</th>
+            <th>Precio Unitario</th>
+            <th>Cantidad</th>
+            <th>Total</th>
+          </tr>
+        </thead>
+        <tbody id="tablaProductos">
+          <!-- Aquí van los productos seleccionados -->
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Abono -->
+    <div class="form-group">
+      <label for="abono">Abono:</label>
+      <input type="number" id="abono" placeholder="Ingrese abono" oninput="actualizarTotales()" />
+    </div>
+
+    <!-- Totales -->
+    <div class="totales">
+      <p><strong>Total:</strong> $<span id="total">0</span></p>
+      <p><strong>Saldo:</strong> $<span id="saldo">0</span></p>
+    </div>
+
+    <!-- Botón para guardar -->
+    <button class="menu-btn" onclick="guardarFactura()">Guardar Factura</button>
+  </main>
+
+  <footer class="main-footer">
+    App Finanzas &copy; 2025
+  </footer>
+
+  <script src="../js/facturacion.js"></script>
+
+    <!-- jsPDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <!-- AutoTable plugin -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+
+</body>
+</html>

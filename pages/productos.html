@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Productos</title>
+  <link rel="stylesheet" href="../css/productos.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>Lista de Productos</h1>
+
+    <ul id="listaProductos" class="productos-lista">
+      <!-- Se llenará con JS -->
+    </ul>
+
+    <button onclick="abrirModal()">Agregar Producto</button>
+  </div>
+
+  <!-- Modal -->
+  <div id="modal" class="modal oculto">
+    <div class="modal-content">
+      <h2>Nuevo Producto</h2>
+      <input type="text" id="nombreProducto" placeholder="Nombre del producto" />
+      <input type="number" id="precioProducto" placeholder="Precio unitario" />
+      <div class="modal-buttons">
+        <button onclick="guardarProducto()">Guardar</button>
+        <button onclick="cerrarModal()">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="../js/productos.js"></script>
+</body>
+</html>
