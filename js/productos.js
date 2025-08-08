@@ -2,6 +2,9 @@ const API_URL = 'https://api-finanzas-vk8w.onrender.com/api/productos';
 
 document.addEventListener('DOMContentLoaded', cargarProductos);
 
+let productoEditando = null;
+
+
 async function cargarProductos() {
   try {
     const res = await fetch(API_URL);
@@ -18,10 +21,63 @@ function mostrarProductos(productos) {
 
   productos.forEach(p => {
     const li = document.createElement('li');
-    li.textContent = `${p.nombre} - $${p.precioUnitario}`;
+    li.innerHTML = `
+      <span>${p.nombre} - $${p.precioUnitario}</span>
+      <div class="acciones">
+        <button onclick='abrirModalEditar(${JSON.stringify(p)})'>✏️</button>
+        <button onclick="eliminarProducto('${p._id}')">🗑️</button>
+      </div>
+    `;
     lista.appendChild(li);
   });
 }
+
+function editarProducto(id, nombreActual, precioActual) {
+  const nuevoNombre = prompt("Editar nombre del producto:", nombreActual);
+  if (!nuevoNombre) return;
+
+  const nuevoPrecio = parseFloat(prompt("Editar precio unitario:", precioActual));
+  if (isNaN(nuevoPrecio) || nuevoPrecio <= 0) {
+    alert("Precio inválido.");
+    return;
+  }
+
+  fetch(`${API_URL}/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ nombre: nuevoNombre, precioUnitario: nuevoPrecio })
+  })
+    .then(res => {
+      if (!res.ok) throw new Error("Error al actualizar");
+      return res.json();
+    })
+    .then(() => {
+      alert("Producto actualizado correctamente");
+      cargarProductos();
+    })
+    .catch(err => {
+      console.error("Error al actualizar producto:", err);
+      alert("Error al actualizar el producto");
+    });
+}
+
+function eliminarProducto(id) {
+  if (!confirm("¿Estás seguro de eliminar este producto?")) return;
+
+  fetch(`${API_URL}/${id}`, {
+    method: 'DELETE'
+  })
+    .then(res => {
+      if (!res.ok) throw new Error("Error al eliminar");
+      alert("Producto eliminado");
+      cargarProductos();
+    })
+    .catch(err => {
+      console.error("Error al eliminar producto:", err);
+      alert("Error al eliminar el producto");
+    });
+}
+
 
 function abrirModal() {
   document.getElementById('modal').classList.remove('oculto');
@@ -58,4 +114,42 @@ async function guardarProducto() {
     console.error('Error al guardar producto:', error);
     alert('Hubo un problema al guardar el producto');
   }
+}
+
+function abrirModalEditar(producto) {
+  productoEditando = producto;
+  document.getElementById('editarNombre').value = producto.nombre;
+  document.getElementById('editarPrecio').value = producto.precioUnitario;
+  document.getElementById('modalEditar').style.display = 'block';
+}
+
+function cerrarModalEditar() {
+  document.getElementById('modalEditar').style.display = 'none';
+  productoEditando = null;
+}
+
+function guardarCambiosProducto() {
+  const nuevoNombre = document.getElementById('editarNombre').value.trim();
+  const nuevoPrecio = parseFloat(document.getElementById('editarPrecio').value);
+
+  if (!nuevoNombre || isNaN(nuevoPrecio)) {
+    alert('Por favor, completa todos los campos');
+    return;
+  }
+
+  fetch(`${API_URL}/${productoEditando._id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ nombre: nuevoNombre, precioUnitario: nuevoPrecio })
+  })
+    .then(res => res.json())
+    .then(data => {
+      alert('Producto actualizado correctamente');
+      cerrarModalEditar();
+      cargarProductos();
+    })
+    .catch(err => {
+      console.error('Error al actualizar producto:', err);
+      alert('Error al actualizar el producto');
+    });
 }

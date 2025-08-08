@@ -30,6 +30,28 @@
     </div>
   </div>
 
+  <!-- Modal de edición de producto -->
+<div id="modalEditar" class="editar">
+  <div class="modal-contenido">
+    <span class="cerrar" onclick="cerrarModalEditar()">&times;</span>
+    <h3>Editar Producto</h3>
+
+    <div class="form-group">
+      <label for="editarNombre">Nombre del Producto</label>
+      <input type="text" id="editarNombre" placeholder="Ej. Base Grande" />
+    </div>
+
+    <div class="form-group">
+      <label for="editarPrecio">Precio Unitario</label>
+      <input type="number" id="editarPrecio" placeholder="Ej. 7500" />
+    </div>
+
+    <button class="guardar-btn" onclick="guardarCambiosProducto()">Guardar Cambios</button>
+  </div>
+</div>
+
+
+
   <script src="../js/productos.js"></script>
 </body>
 </html>

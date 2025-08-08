@@ -80,3 +80,116 @@ button {
 .oculto {
   display: none;
 }
+
+.productos-lista li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  border-bottom: 1px solid #ccc;
+}
+
+.acciones button {
+  margin-left: 5px;
+  padding: 4px 8px;
+  cursor: pointer;
+  border: none;
+  background-color: #f0f0f0;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+}
+
+.acciones button:hover {
+  background-color: #ddd;
+}
+
+/* Modal */
+.editar {
+  display: none;
+  position: fixed;
+  z-index: 10;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(3px);
+}
+
+.modal-contenido {
+  background-color: #fff;
+  margin: 8% auto;
+  padding: 30px 25px;
+  border-radius: 12px;
+  width: 320px;
+  max-width: 90%;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  position: relative;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.cerrar {
+  color: #999;
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  font-size: 24px;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.cerrar:hover {
+  color: #ff4d4d;
+}
+
+.modal-contenido h3 {
+  margin-top: 0;
+  text-align: center;
+  color: #333;
+}
+
+.form-group {
+  margin-bottom: 15px;
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group label {
+  margin-bottom: 6px;
+  font-weight: 500;
+  font-size: 14px;
+  color: #444;
+}
+
+.form-group input {
+  padding: 8px 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 15px;
+  outline: none;
+  transition: border-color 0.3s ease;
+}
+
+.form-group input:focus {
+  border-color: #4caf50;
+}
+
+.guardar-btn {
+  display: block;
+  width: 100%;
+  background-color: #4caf50;
+  color: #fff;
+  padding: 10px;
+  font-weight: bold;
+  font-size: 15px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.guardar-btn:hover {
+  background-color: #43a047;
+}
+
