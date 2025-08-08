@@ -193,3 +193,23 @@ button {
   background-color: #43a047;
 }
 
+.busqueda-contenedor {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+#busquedaProducto {
+  padding: 10px 15px;
+  width: 80%;
+  max-width: 400px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  outline: none;
+  transition: border-color 0.3s ease;
+}
+
+#busquedaProducto:focus {
+  border-color: #4caf50;
+}
+

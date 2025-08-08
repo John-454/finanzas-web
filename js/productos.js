@@ -153,3 +153,14 @@ function guardarCambiosProducto() {
       alert('Error al actualizar el producto');
     });
 }
+
+function filtrarProductos() {
+  const termino = document.getElementById('busquedaProducto').value.toLowerCase();
+  const lista = document.getElementById('listaProductos');
+  const items = lista.getElementsByTagName('li');
+
+  Array.from(items).forEach(item => {
+    const texto = item.textContent.toLowerCase();
+    item.style.display = texto.includes(termino) ? '' : 'none';
+  });
+}
