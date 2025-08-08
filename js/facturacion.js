@@ -26,6 +26,17 @@ function buscarProducto() {
 
   const filtrados = productos.filter(p => p.nombre.toLowerCase().includes(termino));
 
+  if (filtrados.length === 0) {
+    const li = document.createElement('li');
+    li.textContent = `➕ Agregar "${termino}" como nuevo producto`;
+    li.style.fontStyle = 'italic';
+    li.style.color = '#007bff';
+    li.style.cursor = 'pointer';
+    li.onclick = () => mostrarModalAgregarProducto(termino);
+    resultados.appendChild(li);
+    return;
+  }
+
   filtrados.forEach(prod => {
     const li = document.createElement('li');
     li.textContent = `${prod.nombre} - $${prod.precioUnitario}`;
@@ -33,6 +44,7 @@ function buscarProducto() {
     resultados.appendChild(li);
   });
 }
+
 
 function seleccionarProducto(producto) {
   const productoExistente = productosSeleccionados.find(p => p._id === producto._id);
@@ -187,4 +199,44 @@ async function generarPDF(factura) {
 
   doc.save(`factura_${factura.cliente}.pdf`);
 }
+
+function mostrarModalAgregarProducto(nombre) {
+  document.getElementById('nuevo-nombre').value = nombre;
+  document.getElementById('nuevo-precio').value = '';
+  document.getElementById('modalAgregarProducto').style.display = 'block';
+}
+
+function cerrarModalAgregarProducto() {
+  document.getElementById('modalAgregarProducto').style.display = 'none';
+}
+
+function guardarNuevoProducto() {
+  const nombre = document.getElementById('nuevo-nombre').value.trim();
+  const precio = parseFloat(document.getElementById('nuevo-precio').value);
+
+  if (!nombre || isNaN(precio) || precio <= 0) {
+    alert('Por favor, ingresa un precio válido.');
+    return;
+  }
+
+  const nuevoProducto = { nombre, precioUnitario: precio };
+
+  fetch(`${API_URL}/productos`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(nuevoProducto)
+  })
+    .then(res => res.json())
+    .then(data => {
+      productos.push(data); // actualiza la lista local
+      seleccionarProducto(data); // selecciona directamente
+      cerrarModalAgregarProducto();
+      alert('Producto agregado exitosamente');
+    })
+    .catch(err => {
+      console.error('Error al agregar producto:', err);
+      alert('Error al guardar el producto');
+    });
+}
+
 
