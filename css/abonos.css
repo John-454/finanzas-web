@@ -1,4 +1,4 @@
-/* Reset básico */
+/* Reset y base */
 * {
   margin: 0;
   padding: 0;
@@ -7,197 +7,441 @@
 
 body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background-color: #f5f7fa;
-  color: #333;
-  padding: 20px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   min-height: 100vh;
+  padding: 20px;
 }
 
+/* Header principal */
 h1 {
-  text-align: center;
-  margin-bottom: 25px;
-  color: #2c3e50;
-}
-
-button {
-  padding: 6px 12px;
-  background-color: #4caf50;
+  background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
   color: white;
-  border: none;
-  cursor: pointer;
-  border-radius: 4px;
-}
-
-button:hover {
-  background-color: #388e3c;
-}
-
-
-/* Buscador */
-#busqueda {
-  display: block;
+  padding: 30px;
+  text-align: center;
+  border-radius: 15px;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+  font-size: 2.5rem;
   margin: 0 auto 30px auto;
-  padding: 12px 16px;
+  max-width: 1200px;
+}
+
+/* Barra de búsqueda */
+#busqueda {
   width: 100%;
-  max-width: 400px;
-  font-size: 16px;
-  border-radius: 8px;
-  border: 1px solid #ccc;
-  transition: border-color 0.3s ease;
+  max-width: 1200px;
+  margin: 0 auto 30px auto;
+  display: block;
+  padding: 15px 20px;
+  border: 2px solid #e5e7eb;
+  border-radius: 10px;
+  font-size: 1.1rem;
+  background: white;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+  transition: all 0.3s;
 }
 
 #busqueda:focus {
   outline: none;
-  border-color: #3498db;
+  border-color: #4f46e5;
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1), 0 4px 6px rgba(0,0,0,0.05);
 }
 
-/* Lista de facturas */
+#busqueda::placeholder {
+  color: #9ca3af;
+}
+
+/* Container principal de facturas */
 #listaFacturas {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 20px;
 }
 
-.factura {
-  background-color: #fff;
-  border-left: 5px solid #3498db;
-  padding: 16px 20px;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+/* Card de factura */
+.factura-card {
+  background: white;
+  border-radius: 15px;
+  padding: 25px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+  border-left: 5px solid #10b981;
+  transition: all 0.3s;
+  position: relative;
+  overflow: hidden;
+}
+
+.factura-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+}
+
+/* Estados de la factura */
+.factura-card.pagado {
+  border-left-color: #10b981;
+  background: linear-gradient(135deg, #f0fdf4 0%, #f0fdf4 100%);
+}
+
+.factura-card.pendiente {
+  border-left-color: #f59e0b;
+  background: linear-gradient(135deg, #fffbeb 0%, #fffbeb 100%);
+}
+
+.factura-card.vencido {
+  border-left-color: #ef4444;
+  background: linear-gradient(135deg, #fef2f2 0%, #fef2f2 100%);
+}
+
+/* Header de la card */
+.factura-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  flex-wrap: wrap;
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 2px solid #f1f5f9;
 }
 
-.factura-info {
-  flex: 1;
-}
-
-.factura-info p {
-  margin: 6px 0;
-}
-
-.factura .abonar-btn {
-  padding: 10px 16px;
-  background-color: #27ae60;
-  color: #fff;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  font-weight: 600;
-  transition: background-color 0.3s ease;
-}
-
-.factura .abonar-btn:hover {
-  background-color: #219150;
-}
-
-.factura .cancelado {
-  background-color: #bdc3c7;
-  color: #2c3e50;
-  padding: 10px 16px;
-  border-radius: 6px;
+.factura-numero {
   font-weight: bold;
+  color: #374151;
+  font-size: 1.1rem;
+}
+
+.factura-fecha {
+  color: #6b7280;
+  font-size: 0.9rem;
+}
+
+/* Información del cliente */
+.cliente-info {
+  margin-bottom: 20px;
+}
+
+.cliente-nombre {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 5px;
+}
+
+.cliente-contacto {
+  color: #6b7280;
+  font-size: 0.9rem;
+}
+
+/* Información financiera */
+.info-financiera {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.info-item {
+  text-align: center;
+}
+
+.info-label {
+  display: block;
+  font-size: 0.8rem;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 5px;
+}
+
+.info-valor {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #1f2937;
+}
+
+.info-valor.total {
+  color: #3b82f6;
+}
+
+.info-valor.abonado {
+  color: #10b981;
+}
+
+.info-valor.saldo {
+  color: #f59e0b;
+}
+
+.info-valor.saldo.cero {
+  color: #10b981;
+}
+
+/* Barra de progreso */
+.progreso-container {
+  margin: 20px 0;
+}
+
+.progreso-label {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  font-size: 0.9rem;
+  color: #6b7280;
+}
+
+.progreso-barra {
+  width: 100%;
+  height: 8px;
+  background: #f1f5f9;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progreso-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #10b981, #34d399);
+  transition: width 0.3s ease;
+  border-radius: 4px;
+}
+
+/* Botón de abonar */
+.btn-abonar {
+  width: 100%;
+  padding: 12px;
+  background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 600;
+  transition: all 0.3s;
+}
+
+.btn-abonar:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(79, 70, 229, 0.3);
+}
+
+.btn-abonar:disabled {
+  background: #9ca3af;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
 }
 
 /* Modal */
 .modal {
+  display: none;
   position: fixed;
-  top: 0;
+  z-index: 1000;
   left: 0;
+  top: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0,0,0,0.4);
-  display: none;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
+  background: rgba(0,0,0,0.5);
+  backdrop-filter: blur(5px);
 }
 
 .modal-content {
-  background-color: #fff;
+  background: white;
+  margin: 5% auto;
   padding: 30px;
-  border-radius: 10px;
-  width: 100%;
-  max-width: 400px;
+  border-radius: 15px;
+  width: 90%;
+  max-width: 500px;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.2);
   position: relative;
-  animation: fadeIn 0.3s ease;
+  animation: modalFadeIn 0.3s ease;
 }
 
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Header del modal */
 .modal-content h2 {
+  color: #374151;
   margin-bottom: 20px;
-  color: #2c3e50;
+  font-size: 1.8rem;
+  text-align: center;
 }
 
-.modal-content p {
-  margin-bottom: 10px;
-}
-
-.modal-content input {
-  width: 100%;
-  padding: 12px;
-  margin-top: 10px;
-  margin-bottom: 20px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  font-size: 16px;
-}
-
-.modal-content button {
-  width: 100%;
-  padding: 12px;
-  background-color: #2980b9;
-  color: #fff;
-  border: none;
-  border-radius: 6px;
-  font-size: 16px;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-.modal-content button:hover {
-  background-color: #2471a3;
-}
-
+/* Botón cerrar */
 .close {
   position: absolute;
-  top: 12px;
-  right: 14px;
-  font-size: 24px;
+  right: 20px;
+  top: 20px;
+  color: #9ca3af;
+  font-size: 28px;
+  font-weight: bold;
   cursor: pointer;
-  color: #aaa;
-  transition: color 0.2s ease;
+  transition: color 0.3s;
 }
 
 .close:hover {
-  color: #000;
+  color: #374151;
 }
 
-/* Animación */
-@keyframes fadeIn {
-  from {
-    transform: scale(0.9);
-    opacity: 0;
-  }
-  to {
-    transform: scale(1);
-    opacity: 1;
-  }
+/* Información en el modal */
+.modal-content p {
+  margin-bottom: 15px;
+  padding: 10px;
+  background: #f8fafc;
+  border-radius: 8px;
+  border-left: 4px solid #e5e7eb;
+}
+
+.modal-content p strong {
+  color: #374151;
+  margin-right: 10px;
+}
+
+.modal-content span {
+  color: #1f2937;
+  font-weight: 600;
+}
+
+/* Campo de nuevo abono */
+#nuevoAbono {
+  width: 100%;
+  padding: 15px;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  margin: 20px 0;
+  transition: border-color 0.3s;
+}
+
+#nuevoAbono:focus {
+  outline: none;
+  border-color: #4f46e5;
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+}
+
+#nuevoAbono::placeholder {
+  color: #9ca3af;
+}
+
+/* Botón guardar */
+#guardarBtn {
+  width: 100%;
+  padding: 15px;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1.1rem;
+  font-weight: 600;
+  transition: all 0.3s;
+}
+
+#guardarBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(16, 185, 129, 0.3);
+}
+
+/* Estados vacíos */
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: #6b7280;
+  background: white;
+  border-radius: 15px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.empty-state h3 {
+  font-size: 1.5rem;
+  margin-bottom: 10px;
+}
+
+.empty-state p {
+  font-size: 1rem;
+}
+
+/* Estados de carga */
+.loading {
+  text-align: center;
+  padding: 50px;
+  color: #6b7280;
+  background: white;
+  border-radius: 15px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+  max-width: 500px;
+  margin: 0 auto;
 }
 
 /* Responsive */
-@media (max-width: 500px) {
+@media (max-width: 768px) {
+  body {
+    padding: 10px;
+  }
+  
+  h1 {
+    font-size: 2rem;
+    padding: 20px;
+  }
+  
+  #busqueda {
+    margin-bottom: 20px;
+    padding: 12px 15px;
+    font-size: 1rem;
+  }
+  
+  #listaFacturas {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+  
+  .factura-card {
+    padding: 20px;
+  }
+  
+  .cliente-nombre {
+    font-size: 1.2rem;
+  }
+  
+  .info-financiera {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+  
   .modal-content {
-    width: 90%;
+    margin: 10% auto;
+    padding: 20px;
   }
+  
+  .modal-content h2 {
+    font-size: 1.5rem;
+  }
+}
 
-  .factura {
+@media (max-width: 480px) {
+  h1 {
+    font-size: 1.8rem;
+    padding: 15px;
+  }
+  
+  .factura-card {
+    padding: 15px;
+  }
+  
+  .factura-header {
     flex-direction: column;
-    align-items: flex-start;
+    text-align: center;
+    gap: 10px;
   }
-
-  .factura .abonar-btn, .factura .cancelado {
-    margin-top: 10px;
+  
+  .modal-content {
+    width: 95%;
+    margin: 15% auto;
   }
 }

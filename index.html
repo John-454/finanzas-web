@@ -5,19 +5,199 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>App Finanzas</title>
   <link rel="stylesheet" href="css/styles.css" />
+  <script>
+    // ========================================
+    // CONFIGURACIÓN DE PRODUCCIÓN
+    // ========================================
+    
+    // Detección de entorno
+    const isDevelopment = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    
+    // Sistema de logs
+    const logger = {
+      log: (message, data = '') => {
+        if (isDevelopment) {
+          console.log(message, data);
+        }
+      },
+      error: (message, data = '') => {
+        console.error(message, data);
+      }
+    };
+
+    // ========================================
+    // VERIFICACIÓN DE AUTENTICACIÓN
+    // ========================================
+    
+    document.addEventListener("DOMContentLoaded", () => {
+      logger.log("🚀 Página principal cargada - Entorno:", isDevelopment ? 'Desarrollo' : 'Producción');
+      
+      // Verificar autenticación
+      if (!isUserAuthenticated()) {
+        logger.log("❌ Usuario no autenticado, redirigiendo a login...");
+        redirectToLogin();
+        return;
+      }
+
+      // Usuario autenticado - configurar interfaz
+      setupUserInterface();
+      setupLogoutButton();
+      
+      logger.log("✅ Usuario autenticado, interfaz configurada");
+    });
+
+    // Verificar si el usuario está autenticado
+    function isUserAuthenticated() {
+      try {
+        const user = localStorage.getItem("user");
+        const token = localStorage.getItem("token");
+        
+        // Verificación básica
+        if (!user || !token || user.trim() === "" || token.trim() === "") {
+          return false;
+        }
+
+        // Verificar que el JSON del usuario sea válido
+        const userData = JSON.parse(user);
+        if (!userData || (!userData.nombre && !userData.name && !userData.email)) {
+          logger.error("❌ Datos de usuario inválidos");
+          clearUserSession();
+          return false;
+        }
+
+        return true;
+        
+      } catch (error) {
+        logger.error("❌ Error al verificar autenticación:", error);
+        clearUserSession();
+        return false;
+      }
+    }
+
+    // Configurar interfaz de usuario
+    function setupUserInterface() {
+      try {
+        const user = localStorage.getItem("user");
+        if (user) {
+          const userData = JSON.parse(user);
+          const userName = userData.nombre || userData.name || userData.email || "Usuario";
+          
+          // Actualizar el saludo si hay un elemento para eso
+          updateWelcomeMessage(userName);
+        }
+      } catch (error) {
+        logger.error("❌ Error al configurar interfaz:", error);
+      }
+    }
+
+    // Actualizar mensaje de bienvenida
+    function updateWelcomeMessage(userName) {
+      // Buscar elemento de bienvenida y actualizarlo
+      const welcomeElements = document.querySelectorAll('h1, .welcome-message, #welcomeMessage');
+      welcomeElements.forEach(element => {
+        if (element && element.textContent.includes('Bienvenido')) {
+          element.textContent = `Bienvenido ${userName} - App De Finanzas`;
+        }
+      });
+    }
+
+    // Configurar botón de logout
+    function setupLogoutButton() {
+      const logoutBtn = document.getElementById("logoutBtn");
+      if (logoutBtn) {
+        logoutBtn.addEventListener("click", handleLogout);
+        logger.log("✅ Botón de logout configurado");
+      } else {
+        logger.error("⚠️ No se encontró el botón de logout");
+      }
+    }
+
+    // Manejar logout
+    function handleLogout(event) {
+      event.preventDefault();
+      
+      try {
+        logger.log("🚪 Cerrando sesión...");
+        
+        // Confirmar logout (opcional)
+        if (confirm("¿Estás seguro que deseas cerrar sesión?")) {
+          clearUserSession();
+          redirectToLogin();
+        }
+        
+      } catch (error) {
+        logger.error("❌ Error al cerrar sesión:", error);
+        // Forzar logout aunque haya error
+        clearUserSession();
+        redirectToLogin();
+      }
+    }
+
+    // ========================================
+    // FUNCIONES DE UTILIDAD
+    // ========================================
+
+    // Limpiar sesión del usuario
+    function clearUserSession() {
+      try {
+        localStorage.removeItem("user");
+        localStorage.removeItem("token");
+        // Limpiar datos antiguos por si los hay
+        localStorage.removeItem("usuario");
+        logger.log("🧹 Sesión limpiada completamente");
+      } catch (error) {
+        logger.error("❌ Error al limpiar sesión:", error);
+        // Como último recurso, limpiar todo el localStorage
+        localStorage.clear();
+      }
+    }
+
+    // Redirigir a login
+    function redirectToLogin() {
+      try {
+        setTimeout(() => {
+          window.location.replace("login.html");
+        }, isDevelopment ? 500 : 100);
+      } catch (error) {
+        logger.error("❌ Error en redirección:", error);
+        // Fallback - redirección inmediata
+        window.location.href = "login.html";
+      }
+    }
+
+    // ========================================
+    // MANEJO DE ERRORES GLOBALES (OPCIONAL)
+    // ========================================
+    
+    // Capturar errores JavaScript no manejados
+    window.addEventListener('error', (event) => {
+      logger.error('❌ Error JavaScript no manejado:', {
+        message: event.message,
+        filename: event.filename,
+        line: event.lineno
+      });
+    });
+
+    // Capturar promesas rechazadas no manejadas
+    window.addEventListener('unhandledrejection', (event) => {
+      logger.error('❌ Promesa rechazada no manejada:', event.reason);
+    });
+  </script>
 </head>
 <body>
   <header class="main-header">
     <h1>Bienvenido A Tu App De Finanzas</h1>
     <p>Seleccione una opción para continuar</p>
+    <button id="logoutBtn" class="logout-btn">🚪 Cerrar Sesión</button>
   </header>
 
   <main class="menu-opciones">
-    <a href="pages/facturacion.html" class="menu-btn">🧾 Facturación</a>
-    <a href="pages/abonos.html" class="menu-btn">💵 Abonos</a>
-    <a href="pages/historial.html" class="menu-btn">📜 Historial de Abonos</a>
-    <a href="pages/contabilidad.html" class="menu-btn">📊 Contabilidad</a>
-    <a href="pages/productos.html" class="menu-btn">📦 Productos</a>
+    <a href="pages/facturacion.html" class="menu-btn">Facturación</a>
+    <a href="pages/abonos.html" class="menu-btn">Abonos</a>
+    <a href="pages/historial.html" class="menu-btn">Historial de Facturas</a>
+    <a href="pages/contabilidad.html" class="menu-btn">Contabilidad</a>
+    <a href="pages/productos.html" class="menu-btn">Productos</a>
+    <a href="pages/empresa.html" class="menu-btn">Mi Empresa</a>
   </main>
 
   <footer class="main-footer">

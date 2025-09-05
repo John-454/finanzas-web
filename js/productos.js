@@ -1,17 +1,28 @@
 const API_URL = 'https://api-finanzas-vk8w.onrender.com/api/productos';
+//const API_URL = 'http://localhost:3000/api/productos';
 
 document.addEventListener('DOMContentLoaded', cargarProductos);
 
 let productoEditando = null;
 
-
 async function cargarProductos() {
   try {
-    const res = await fetch(API_URL);
+    const token = localStorage.getItem('token');
+    const res = await fetch(API_URL, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+    
+    if (!res.ok) {
+      throw new Error(`Error HTTP: ${res.status}`);
+    }
+    
     const data = await res.json();
     mostrarProductos(data);
   } catch (error) {
     console.error('Error al cargar productos:', error);
+    alert('Error al cargar productos. Verifica la conexión con el servidor.');
   }
 }
 
@@ -21,63 +32,50 @@ function mostrarProductos(productos) {
 
   productos.forEach(p => {
     const li = document.createElement('li');
+    li.className = 'producto-item';
+    const precio = Number(p.precioUnitario) || 0;
     li.innerHTML = `
-      <span>${p.nombre} - $${p.precioUnitario}</span>
-      <div class="acciones">
-        <button onclick='abrirModalEditar(${JSON.stringify(p)})'>✏️</button>
-        <button onclick="eliminarProducto('${p._id}')">🗑️</button>
+      <div class="producto-info">
+        <div class="producto-nombre">${p.nombre}</div>
+        <div class="precio-label">Precio</div>
+        <div class="producto-precio">${precio.toFixed(2)}</div>
+      </div>
+      <div class="producto-acciones">
+        <button class="btn-editar" onclick='abrirModalEditar(${JSON.stringify(p)})'>✏️ Editar</button>
+        <button class="btn-eliminar" onclick="eliminarProducto('${p._id}')">🗑️ Eliminar</button>
       </div>
     `;
     lista.appendChild(li);
   });
 }
 
-function editarProducto(id, nombreActual, precioActual) {
-  const nuevoNombre = prompt("Editar nombre del producto:", nombreActual);
-  if (!nuevoNombre) return;
-
-  const nuevoPrecio = parseFloat(prompt("Editar precio unitario:", precioActual));
-  if (isNaN(nuevoPrecio) || nuevoPrecio <= 0) {
-    alert("Precio inválido.");
-    return;
-  }
-
-  fetch(`${API_URL}/${id}`, {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ nombre: nuevoNombre, precioUnitario: nuevoPrecio })
-  })
-    .then(res => {
-      if (!res.ok) throw new Error("Error al actualizar");
-      return res.json();
-    })
-    .then(() => {
-      alert("Producto actualizado correctamente");
-      cargarProductos();
-    })
-    .catch(err => {
-      console.error("Error al actualizar producto:", err);
-      alert("Error al actualizar el producto");
-    });
-}
-
-function eliminarProducto(id) {
+// Función mejorada para eliminar producto
+async function eliminarProducto(id) {
   if (!confirm("¿Estás seguro de eliminar este producto?")) return;
 
-  fetch(`${API_URL}/${id}`, {
-    method: 'DELETE'
-  })
-    .then(res => {
-      if (!res.ok) throw new Error("Error al eliminar");
-      alert("Producto eliminado");
-      cargarProductos();
-    })
-    .catch(err => {
-      console.error("Error al eliminar producto:", err);
-      alert("Error al eliminar el producto");
-    });
-}
+  const token = localStorage.getItem('token');
 
+  try {
+    const res = await fetch(`${API_URL}/${id}`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+
+    if (!res.ok) {
+      const errorData = await res.json().catch(() => ({}));
+      throw new Error(`Error ${res.status}: ${errorData.message || 'Error al eliminar'}`);
+    }
+
+    alert("Producto eliminado correctamente");
+    await cargarProductos(); // Recargar la lista
+    
+  } catch (error) {
+    console.error("Error al eliminar producto:", error);
+    alert(`Error al eliminar el producto: ${error.message}`);
+  }
+}
 
 function abrirModal() {
   document.getElementById('modal').classList.remove('oculto');
@@ -98,21 +96,30 @@ async function guardarProducto() {
     return;
   }
 
+  const token = localStorage.getItem('token');
+
   try {
     const res = await fetch(API_URL, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
       body: JSON.stringify({ nombre, precioUnitario: precio })
     });
 
-    if (!res.ok) throw new Error('Error al guardar');
+    if (!res.ok) {
+      const errorData = await res.json().catch(() => ({}));
+      throw new Error(`Error ${res.status}: ${errorData.message || 'Error al guardar'}`);
+    }
 
     alert('Producto agregado correctamente');
     cerrarModal();
-    cargarProductos(); // recargar lista
+    await cargarProductos();
+    
   } catch (error) {
     console.error('Error al guardar producto:', error);
-    alert('Hubo un problema al guardar el producto');
+    alert(`Hubo un problema al guardar el producto: ${error.message}`);
   }
 }
 
@@ -120,37 +127,86 @@ function abrirModalEditar(producto) {
   productoEditando = producto;
   document.getElementById('editarNombre').value = producto.nombre;
   document.getElementById('editarPrecio').value = producto.precioUnitario;
-  document.getElementById('modalEditar').style.display = 'block';
+  document.getElementById('modalEditar').classList.remove('oculto');
 }
 
 function cerrarModalEditar() {
-  document.getElementById('modalEditar').style.display = 'none';
+  document.getElementById('modalEditar').classList.add('oculto');
   productoEditando = null;
 }
 
-function guardarCambiosProducto() {
+// Función mejorada para guardar cambios del producto
+async function guardarCambiosProducto() {
   const nuevoNombre = document.getElementById('editarNombre').value.trim();
   const nuevoPrecio = parseFloat(document.getElementById('editarPrecio').value);
 
-  if (!nuevoNombre || isNaN(nuevoPrecio)) {
-    alert('Por favor, completa todos los campos');
+  if (!nuevoNombre || isNaN(nuevoPrecio) || nuevoPrecio <= 0) {
+    alert('Por favor, completa todos los campos correctamente');
     return;
   }
 
-  fetch(`${API_URL}/${productoEditando._id}`, {
+  const token = localStorage.getItem('token');
+
+  try {
+    const res = await fetch(`${API_URL}/${productoEditando._id}`, {
+      method: 'PUT',
+      headers: { 
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({ nombre: nuevoNombre, precioUnitario: nuevoPrecio })
+    });
+
+    if (!res.ok) {
+      const errorData = await res.json().catch(() => ({}));
+      throw new Error(`Error ${res.status}: ${errorData.message || 'Error al actualizar'}`);
+    }
+
+    alert('Producto actualizado correctamente');
+    cerrarModalEditar();
+    await cargarProductos();
+    
+  } catch (error) {
+    console.error('Error al actualizar producto:', error);
+    alert(`Error al actualizar el producto: ${error.message}`);
+  }
+}
+
+// Función legacy - se mantiene por compatibilidad pero se recomienda usar guardarCambiosProducto
+function editarProducto(id, nombreActual, precioActual) {
+  const nuevoNombre = prompt("Editar nombre del producto:", nombreActual);
+  if (!nuevoNombre) return;
+
+  const nuevoPrecio = parseFloat(prompt("Editar precio unitario:", precioActual));
+  if (isNaN(nuevoPrecio) || nuevoPrecio <= 0) {
+    alert("Precio inválido.");
+    return;
+  }
+
+  const token = localStorage.getItem('token');
+
+  fetch(`${API_URL}/${id}`, {
     method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    },
     body: JSON.stringify({ nombre: nuevoNombre, precioUnitario: nuevoPrecio })
   })
-    .then(res => res.json())
-    .then(data => {
-      alert('Producto actualizado correctamente');
-      cerrarModalEditar();
+    .then(async res => {
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        throw new Error(`Error ${res.status}: ${errorData.message || 'Error al actualizar'}`);
+      }
+      return res.json();
+    })
+    .then(() => {
+      alert("Producto actualizado correctamente");
       cargarProductos();
     })
     .catch(err => {
-      console.error('Error al actualizar producto:', err);
-      alert('Error al actualizar el producto');
+      console.error("Error al actualizar producto:", err);
+      alert(`Error al actualizar el producto: ${err.message}`);
     });
 }
 

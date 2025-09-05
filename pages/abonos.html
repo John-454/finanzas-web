@@ -12,7 +12,20 @@
 
   <input type="text" id="busqueda" placeholder="Buscar por cliente..." oninput="buscarCliente()" />
 
+  <!-- Contenedor principal corregido - removida la clase factura-card -->
   <div id="listaFacturas"></div>
+
+  <!-- Estado de carga -->
+  <div id="estadoCarga" class="loading" style="display: none;">
+    <h3>Cargando facturas...</h3>
+    <p>Por favor espere un momento</p>
+  </div>
+
+  <!-- Estado vacío -->
+  <div id="estadoVacio" class="empty-state" style="display: none;">
+    <h3>No se encontraron facturas</h3>
+    <p>No hay facturas que coincidan con tu búsqueda</p>
+  </div>
 
   <!-- Modal -->
   <div id="modalAbono" class="modal">
@@ -29,6 +42,15 @@
     </div>
   </div>
 
+  <!-- Cerrar modal al hacer clic fuera de él -->
+  <script>
+    window.onclick = function(event) {
+      const modal = document.getElementById('modalAbono');
+      if (event.target === modal) {
+        cerrarModal();
+      }
+    }
+  </script>
   <script src="../js/abonos.js"></script>
 </body>
 </html>

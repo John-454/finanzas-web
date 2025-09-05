@@ -3,17 +3,123 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Historial de Abonos</title>
+  <title>Historial de Facturas</title>
   <link rel="stylesheet" href="../css/historial.css" />
 </head>
 <body>
   <div class="container">
-    <h1>Historial de Abonos</h1>
-    <input type="text" id="buscarCliente" placeholder="Buscar cliente..." />
+    <h1>Historial de Facturas</h1>
+    
+    <input type="text" id="buscarCliente" placeholder="Buscar cliente (mínimo 3 caracteres)..." />
 
+    <!-- Estado de carga -->
+    <div id="estadoCarga" class="loading" style="display: none;">
+      <div class="loading-spinner"></div>
+      <h3>Buscando facturas...</h3>
+      <p>Por favor espere un momento</p>
+    </div>
+
+    <!-- Header de resultados con estadísticas -->
+    <div id="resultadosHeader" class="resultados-header" style="display: none;">
+      <h2 id="tituloResultados">Facturas encontradas</h2>
+      <div class="estadisticas">
+        <div class="stat-item">
+          <div class="stat-label">Total Facturas</div>
+          <div class="stat-value" id="totalFacturas">0</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-label">Monto Total</div>
+          <div class="stat-value currency" id="montoTotal">$0</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-label">Total Abonado</div>
+          <div class="stat-value currency" id="totalAbonado">$0</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-label">Saldo Pendiente</div>
+          <div class="stat-value currency" id="saldoPendiente">$0</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Resultados de búsqueda -->
     <div id="resultados"></div>
+
+    <!-- Estado vacío -->
+    <div id="estadoVacio" class="empty-state" style="display: none;">
+      <div class="empty-icon">📄</div>
+      <h3>No se encontraron facturas</h3>
+      <p>Intenta buscar con un nombre diferente o verifica la ortografía</p>
+    </div>
+
+    <!-- Mensaje inicial -->
+    <div id="estadoInicial" class="empty-state">
+      <div class="empty-icon">🔍</div>
+      <h3>Buscar Historial de Facturas</h3>
+      <p>Ingresa el nombre de un cliente para ver su historial de facturas</p>
+    </div>
   </div>
 
+  <!-- Modal de edición -->
+  <div id="modalEditar" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="modalTitulo">Editar Factura</h3>
+        <span class="close" onclick="cerrarModal()">&times;</span>
+      </div>
+      
+      <div id="productosContainer">
+        <!-- Los productos se cargarán aquí dinámicamente -->
+      </div>
+      
+      <div class="agregar-producto">
+        <h4>➕ Agregar Nuevo Producto</h4>
+        
+        <label for="nuevoProdNombre">Nombre del producto:</label>
+        <input type="text" placeholder="Ej: Producto ABC" id="nuevoProdNombre" />
+        
+        <label for="nuevoProdCantidad">Cantidad:</label>
+        <input type="number" placeholder="1" id="nuevoProdCantidad" min="1" value="1" />
+        
+        <label for="nuevoProdPrecio">Precio Unitario:</label>
+        <input type="number" placeholder="0.00" id="nuevoProdPrecio" min="0.01" step="0.01" />
+        
+        <button class="btn-agregar" onclick="agregarProductoTemp()">
+          ➕ Agregar Producto
+        </button>
+      </div>
+      
+      <div class="modal-actions">
+        <button class="btn-guardar" id="btnGuardar" onclick="guardarFactura()">
+          💾 Guardar Cambios
+        </button>
+        <button class="btn-cerrar" onclick="cerrarModal()">
+          ❌ Cerrar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts necesarios -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+
+  <!-- Script principal -->
+  <script>
+    // Cerrar modal al hacer clic fuera de él
+    window.onclick = function(event) {
+      const modal = document.getElementById('modalEditar');
+      if (event.target === modal) {
+        cerrarModal();
+      }
+    }
+
+    // Función para cerrar modal
+    function cerrarModal() {
+      document.getElementById('modalEditar').style.display = 'none';
+    }
+  </script>
+  
   <script src="../js/historial.js"></script>
 </body>
 </html>

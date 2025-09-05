@@ -16,7 +16,7 @@
 
 
     <ul id="listaProductos" class="productos-lista">
-      <!-- Se llenará con JS -->
+      <li class="loading">Cargando productos...</li>
     </ul>
 
     <button onclick="abrirModal()">Agregar Producto</button>
@@ -36,7 +36,7 @@
   </div>
 
   <!-- Modal de edición de producto -->
-<div id="modalEditar" class="editar">
+<div id="modalEditar" class="editar oculto">
   <div class="modal-contenido">
     <span class="cerrar" onclick="cerrarModalEditar()">&times;</span>
     <h3>Editar Producto</h3>

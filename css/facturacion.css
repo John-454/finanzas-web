@@ -1,103 +1,397 @@
-.container {
-  max-width: 800px;
-  margin: auto;
-  padding: 2rem 1rem;
+/* Reset y base */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 100vh;
+  padding: 20px;
+}
+
+/* Header principal */
+.main-header {
+  background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+  color: white;
+  padding: 30px;
+  text-align: center;
+  border-radius: 15px 15px 0 0;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.main-header h1 {
+  font-size: 2.5rem;
+  margin-bottom: 10px;
+}
+
+.main-header p {
+  font-size: 1.2rem;
+  opacity: 0.9;
+}
+
+/* Container principal */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  background: white;
+  border-radius: 15px;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+  overflow: hidden;
+}
+
+main.container {
+  padding: 30px;
+  border-radius: 0 0 15px 15px;
+}
+
+/* Form groups */
 .form-group {
-  margin-bottom: 1.5rem;
+  margin-bottom: 25px;
 }
 
 .form-group label {
   display: block;
-  margin-bottom: 0.5rem;
-  font-weight: bold;
-}
-
-input[type="text"],
-input[type="number"] {
-  width: 100%;
-  padding: 0.8rem;
-  border-radius: 6px;
-  border: 1px solid #ccc;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: #374151;
   font-size: 1rem;
 }
 
-.table-container {
-  overflow-x: auto;
-  margin-bottom: 1.5rem;
-}
-
-table {
+.form-group input,
+.form-group select {
   width: 100%;
-  border-collapse: collapse;
-  margin-top: 1rem;
+  padding: 12px;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: border-color 0.3s, box-shadow 0.3s;
 }
 
-thead {
-  background-color: #4CAF50;
-  color: white;
+.form-group input:focus,
+.form-group select:focus {
+  outline: none;
+  border-color: #4f46e5;
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
 }
 
-th, td {
-  text-align: left;
-  padding: 0.75rem;
-  border: 1px solid #ddd;
+.form-group input::placeholder {
+  color: #9ca3af;
 }
 
-.totales {
-  margin-bottom: 1.5rem;
-  font-size: 1.1rem;
-}
-
+/* Dropdown de búsqueda */
 .dropdown-list {
   list-style: none;
-  margin-top: 0.5rem;
-  padding: 0;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  background-color: white;
-  max-height: 150px;
+  background: white;
+  border: 2px solid #e5e7eb;
+  border-top: none;
+  border-radius: 0 0 8px 8px;
+  max-height: 200px;
   overflow-y: auto;
+  position: absolute;
+  max-width: 500px;
+  z-index: 10;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
 }
 
 .dropdown-list li {
-  padding: 0.5rem;
+  padding: 12px;
   cursor: pointer;
+  transition: background-color 0.2s;
+  border-bottom: 1px solid #f3f4f6;
 }
 
 .dropdown-list li:hover {
-  background-color: #f0f0f0;
+  background-color: #f8fafc;
 }
 
+.dropdown-list li:last-child {
+  border-bottom: none;
+}
+
+/* Modal */
 .modal {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.5);
-  z-index: 10;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
 }
 
 .modal-contenido {
   background: white;
-  padding: 2rem;
-  max-width: 400px;
-  margin: 10% auto;
-  border-radius: 8px;
-  box-shadow: 0 0 15px rgba(0,0,0,0.2);
+  padding: 30px;
+  border-radius: 15px;
+  max-width: 500px;
+  width: 90%;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.2);
 }
 
-button {
-  padding: 6px 12px;
-  background-color: #4caf50;
+.modal-contenido h3 {
+  color: #374151;
+  margin-bottom: 20px;
+  font-size: 1.5rem;
+}
+
+.modal-contenido label {
+  display: block;
+  margin-bottom: 8px;
+  margin-top: 15px;
+  font-weight: 600;
+  color: #374151;
+}
+
+.modal-contenido input {
+  width: 100%;
+  padding: 12px;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 1rem;
+  margin-bottom: 15px;
+}
+
+.modal-contenido button {
+  margin: 10px 5px 0 0;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: all 0.3s;
+}
+
+/* Tabla de productos */
+.table-container {
+  background: white;
+  border-radius: 15px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+  overflow: hidden;
+  margin: 25px 0;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+thead {
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+}
+
+thead th {
+  padding: 20px;
+  text-align: left;
+  font-weight: 600;
+  color: #374151;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+tbody td {
+  padding: 15px 20px;
+  border-bottom: 1px solid #f1f5f9;
+  color: #1f2937;
+}
+
+tbody tr:hover {
+  background-color: #f8fafc;
+}
+
+tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* Input de cantidad en tabla */
+tbody input[type="number"] {
+  width: 80px;
+  padding: 5px 8px;
+  border: 1px solid #e5e7eb;
+  border-radius: 5px;
+  text-align: center;
+}
+
+/* Botón eliminar en tabla */
+tbody button {
+  background: #ef4444;
   color: white;
   border: none;
+  padding: 5px 10px;
+  border-radius: 5px;
   cursor: pointer;
-  border-radius: 4px;
+  font-size: 0.9rem;
+  transition: background-color 0.3s;
 }
 
-button:hover {
-  background-color: #388e3c;
+tbody button:hover {
+  background: #dc2626;
+}
+
+/* Sección de totales */
+.totales {
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  padding: 25px;
+  border-radius: 15px;
+  margin: 25px 0;
+  border-left: 5px solid #10b981;
+}
+
+.totales p {
+  font-size: 1.2rem;
+  margin-bottom: 10px;
+  color: #374151;
+}
+
+.totales p:last-child {
+  margin-bottom: 0;
+}
+
+.totales span {
+  color: #1f2937;
+}
+
+/* Botones principales */
+.menu-btn {
+  background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+  color: white;
+  border: none;
+  padding: 15px 30px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1.1rem;
+  font-weight: 600;
+  transition: all 0.3s;
+  width: 100%;
+  margin-top: 20px;
+}
+
+.menu-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(79, 70, 229, 0.3);
+}
+
+/* Botones del modal */
+#button {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+}
+
+#button:hover {
+  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+  transform: translateY(-1px);
+}
+
+#button:last-of-type {
+  background: #6b7280;
+}
+
+#button:last-of-type:hover {
+  background: #4b5563;
+}
+
+/* Footer */
+.main-footer {
+  background: #1f2937;
+  color: #e5e7eb;
+  text-align: center;
+  padding: 20px;
+  margin-top: 30px;
+  border-radius: 0 0 15px 15px;
+}
+
+/* Estados de carga y mensajes */
+.loading {
+  text-align: center;
+  padding: 50px;
+  color: #6b7280;
+  font-style: italic;
+}
+
+.error {
+  background: #fef2f2;
+  color: #dc2626;
+  padding: 15px;
+  border-radius: 8px;
+  margin: 20px 0;
+  border-left: 5px solid #dc2626;
+}
+
+.success {
+  background: #f0fdf4;
+  color: #16a34a;
+  padding: 15px;
+  border-radius: 8px;
+  margin: 20px 0;
+  border-left: 5px solid #16a34a;
+}
+
+/* Efectos hover adicionales */
+.form-group:hover input,
+.form-group:hover select {
+  border-color: #9ca3af;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  body {
+    padding: 10px;
+  }
+  
+  .main-header {
+    padding: 20px;
+  }
+  
+  .main-header h1 {
+    font-size: 2rem;
+  }
+  
+  main.container {
+    padding: 20px;
+  }
+  
+  .modal-contenido {
+    padding: 20px;
+    margin: 20px;
+  }
+  
+  table {
+    font-size: 0.9rem;
+  }
+  
+  thead th,
+  tbody td {
+    padding: 10px 15px;
+  }
+  
+  .totales {
+    padding: 20px;
+  }
+  
+  .totales p {
+    font-size: 1.1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .main-header h1 {
+    font-size: 1.8rem;
+  }
+  
+  table {
+    font-size: 0.8rem;
+  }
+  
+  thead th,
+  tbody td {
+    padding: 8px 10px;
+  }
+  
+  tbody input[type="number"] {
+    width: 60px;
+  }
 }

@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mi Empresa - Gestión Financiera</title>
+  <link rel="stylesheet" href="../css/empresa.css">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="header-content">
+      <h1><i class="fas fa-building"></i> Mi Empresa</h1>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <div class="container">
+      <!-- Indicador de carga -->
+      <div id="loading" style="display:none;">Cargando...</div>
+
+      <!-- Card principal de empresa -->
+      <div id="empresaCard" style="display:none;">
+        <div class="card-header">
+          <h2><i class="fas fa-plus-circle"></i> Datos de la Empresa</h2>
+        </div>
+
+        <form id="empresaForm" enctype="multipart/form-data">
+          <div class="form-grid">
+            
+            <!-- Logo Section -->
+            <div class="logo-section">
+              <div class="logo-container">
+                <div id="logoPreview" class="logo-preview">
+                  <i class="fas fa-building logo-placeholder"></i>
+                  <span class="logo-text">Sin Logo</span>
+                </div>
+                <label for="logoFile" class="btn btn-secondary">
+                  <i class="fas fa-camera"></i> Subir Logo
+                </label>
+                <input type="file" id="logoFile" name="logo" accept="image/*" style="display: none;" onchange="previewLogo(this)">
+              </div>
+            </div>
+
+            <!-- Form Fields -->
+            <div class="form-fields">
+              <div class="form-group">
+                <label for="nombre"><i class="fas fa-building"></i> Nombre de la Empresa *</label>
+                <input type="text" id="nombre" name="nombre" required>
+              </div>
+
+              <div class="form-group">
+                <label for="contacto"><i class="fas fa-phone"></i> Número de Contacto *</label>
+                <input type="text" id="contacto" name="contacto" required>
+              </div>
+
+              <div class="form-group">
+                <label for="direccion"><i class="fas fa-map-marker-alt"></i> Dirección *</label>
+                <input type="text" id="direccion" name="direccion" required>
+              </div>
+
+              <div class="form-group">
+                <label for="ciudad"><i class="fas fa-city"></i> Ciudad *</label>
+                <input type="text" id="ciudad" name="ciudad" required>
+              </div>
+
+              <!-- Form Actions -->
+              <div class="form-actions">
+                <button type="submit" class="btn btn-success">
+                  <i class="fas fa-save"></i> Guardar Empresa
+                </button>
+                <button type="reset" class="btn btn-secondary">
+                  <i class="fas fa-times"></i> Cancelar
+                </button>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <!-- Card para estado "sin empresa" -->
+      <div id="noEmpresaCard" style="display:none;">
+        <p>No tienes empresa registrada.</p>
+        <button id="btnCrearEmpresa" onclick="crearNuevaEmpresa()">Crear Empresa</button>
+      </div>
+
+      <!-- Card para crear empresa -->
+      <div id="crearEmpresaCard" style="display:none;">
+        <form id="crearEmpresaForm" enctype="multipart/form-data">
+          <div class="form-group">
+            <label for="nombreNuevo">Nombre de la Empresa *</label>
+            <input type="text" id="nombreNuevo" name="nombreNuevo" required>
+          </div>
+          <div class="form-group">
+            <label for="contactoNuevo">Número de Contacto *</label>
+            <input type="text" id="contactoNuevo" name="contactoNuevo" required>
+          </div>
+          <div class="form-group">
+            <label for="direccionNuevo">Dirección *</label>
+            <input type="text" id="direccionNuevo" name="direccionNuevo" required>
+          </div>
+          <div class="form-group">
+            <label for="ciudadNuevo">Ciudad *</label>
+            <input type="text" id="ciudadNuevo" name="ciudadNuevo" required>
+          </div>
+          <div class="form-group">
+            <label for="logoFileNuevo">Logo</label>
+            <input type="file" id="logoFileNuevo" name="logoFileNuevo" accept="image/*" onchange="previewLogoNuevo(this)">
+            <div id="logoPreviewNuevo"></div>
+          </div>
+          <div class="form-actions">
+            <button type="submit" class="btn btn-success">Guardar Empresa</button>
+            <button type="reset" class="btn btn-secondary" onclick="cancelarCreacion()">Cancelar</button>
+          </div>
+        </form>
+      </div>
+
+      <div id="toast" class="toast"></div>
+    </div>
+  </main>
+
+  <!-- Preview Script -->
+  <script>
+    function previewLogo(input) {
+      const file = input.files[0];
+      const preview = document.getElementById("logoPreview");
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          preview.innerHTML = `<img src="${e.target.result}" alt="Logo de la empresa">`;
+        };
+        reader.readAsDataURL(file);
+      } else {
+        preview.innerHTML = `<i class="fas fa-building logo-placeholder"></i><span class="logo-text">Sin Logo</span>`;
+      }
+    }
+  </script>
+  <script src="../js/empresa.js"></script>
+</body>
+</html>

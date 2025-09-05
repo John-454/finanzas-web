@@ -3,32 +3,130 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Contabilidad</title>
-  <link rel="stylesheet" href="../css/contabilidad.css" />
+  <title>Contabilidad Diaria</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="../css/contabilidad.css" />
 </head>
 <body>
   <div class="container">
-    <h1>Resumen General</h1>
-
-    <div class="resumen">
-      <div><strong>Total Vendido:</strong> <span id="totalVendido">$0</span></div>
-      <div><strong>Saldo Pendiente:</strong> <span id="totalSaldo">$0</span></div>
+    <div class="header">
+      <h1>📊 Contabilidad Diaria</h1>
+      <div class="fecha-selector">
+        <input type="date" id="fechaSeleccionada" />
+        <button onclick="cargarResumenDia()">Ver Resumen</button>
+        <button onclick="mostrarHoy()">Hoy</button>
+      </div>
     </div>
 
-    <canvas id="graficoGeneral" width="300" height="300"></canvas>
+    <div class="main-content">
+      <div class="tabs">
+        <button class="tab active" onclick="cambiarTab('resumen')">📈 Resumen Diario</button>
+        <button class="tab" onclick="cambiarTab('gastos')">💰 Gestión de Gastos</button>
+        <button class="tab" onclick="cambiarTab('graficos')">📊 Gráficos</button>
+        <button class="tab" onclick="cambiarTab('facturas')">📋 Facturas del Día</button>
+      </div>
 
-    <hr>
+      <!-- Tab Resumen -->
+      <div id="resumen-tab" class="tab-content active">
+        <div id="loading" class="loading oculto">
+          <p>Cargando datos...</p>
+        </div>
 
-    <h2>Búsqueda por Cliente</h2>
-    <input
-      type="text"
-      id="busquedaCliente"
-      placeholder="Escriba el nombre del cliente"
-      oninput="buscarPorCliente()"
-    />
+        <div id="error-message" class="error oculto"></div>
+        <div id="success-message" class="success oculto"></div>
 
-    <div id="clienteResumen" class="oculto"></div>
+        <div class="resumen-cards" id="resumen-cards">
+          <div class="card ventas">
+            <h3>💵 Total Ventas</h3>
+            <div class="valor" id="totalVentas">$0</div>
+            <small id="cantidadFacturas">0 facturas</small>
+          </div>
+          
+          <div class="card abonos">
+            <h3>💵 Total Abonos</h3>
+            <div class="valor" id="totalAbonos">$0</div>
+            
+          </div>
+
+          <div class="card gastos">
+            <h3>💸 Total Gastos</h3>
+            <div class="valor" id="totalGastos">$0</div>
+            <small id="cantidadGastos">0 gastos</small>
+          </div>
+
+          <div class="card saldo">
+            <h3>📊 Saldo Neto</h3>
+            <div class="valor" id="saldoNeto">$0</div>
+            <small>Abonos - Gastos</small>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab Gastos -->
+      <div id="gastos-tab" class="tab-content">
+        <div class="gasto-form">
+          <h3>➕ Registrar Nuevo Gasto</h3>
+          <form id="form-gasto" onsubmit="agregarGasto(event)">
+            <div class="form-group">
+              <label>Descripción del Gasto:</label>
+              <input type="text" id="descripcionGasto" required placeholder="Ej: Compra de materiales">
+            </div>
+
+            <div class="form-group">
+              <label>Monto:</label>
+              <input type="number" id="montoGasto" step="0.01" min="0" required placeholder="0.00">
+            </div>
+
+            <div class="form-group">
+              <label>Categoría:</label>
+              <select id="categoriaGasto">
+                <option value="General">General</option>
+                <option value="Suministros">Suministros</option>
+                <option value="Transporte">Transporte</option>
+                <option value="Comida">Comida</option>
+                <option value="Servicios">Servicios</option>
+                <option value="Mantenimiento">Mantenimiento</option>
+                <option value="Otros">Otros</option>
+              </select>
+            </div>
+
+            <button type="submit" class="btn-primary">💾 Registrar Gasto</button>
+          </form>
+        </div>
+
+        <div class="gastos-lista">
+          <h3>📋 Gastos del Día</h3>
+          <div id="lista-gastos">
+            <div class="loading">No hay gastos registrados para esta fecha</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab Gráficos -->
+      <div id="graficos-tab" class="tab-content">
+        <div class="charts-container">
+          <div class="chart-card">
+            <h3>📊 Distribución Diaria</h3>
+            <canvas id="graficoDistribucion"></canvas>
+          </div>
+          
+          <div class="chart-card">
+            <h3>💰 Flujo de Efectivo</h3>
+            <canvas id="graficoFlujo"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- ✅ Tab Facturas - MOVIDO AQUÍ, AL MISMO NIVEL QUE LOS OTROS TABS -->
+      <div id="facturas-tab" class="tab-content">
+        <div class="card">
+          <h3>📋 Facturas del Día</h3>
+          <div id="lista-facturas">
+            <div class="loading">No hay facturas registradas para esta fecha</div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 
   <script src="../js/contabilidad.js"></script>
