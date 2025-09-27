@@ -1,5 +1,8 @@
+// Detección automática de entorno
+const isDevelopment = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
 // Configuración de la API
 const API_ROOT = (typeof window !== 'undefined' && window.API_ROOT) || localStorage.getItem('API_ROOT') || 'https://api-finanzas-vk8w.onrender.com';
+//const API_ROOT = 'http://localhost:3000';
 const API_CONTABILIDAD = `${API_ROOT}/api/contabilidad`;
 const API_FACTURAS = `${API_ROOT}/api/facturas`;
 let resumenActual = null;
@@ -25,6 +28,8 @@ function obtenerHeaders() {
     // Inicializar la aplicación
     window.onload = () => {
       mostrarHoy();
+      cargarResumenMesActual();
+      cargarHistorialMensual();
     };
 
     function mostrarHoy() {
@@ -333,7 +338,7 @@ if (!saldoNetoElement.querySelector('small')) {
     if (!response.ok) throw new Error('Error al registrar gasto');
 
      // 🔄 Recargar resumen y lista de gastos
-    await cargarResumenDia();
+    await cargarResumenDia(), await cargarResumenMesActual();
 
     // ✅ Mostrar mensaje de éxito
     mostrarSuccess('Gasto registrado con éxito');
@@ -360,7 +365,7 @@ if (!saldoNetoElement.querySelector('small')) {
     }
 
     // 🔄 Recargar resumen y listas
-    await cargarResumenDia();
+    await cargarResumenDia(), await cargarResumenMesActual();
 
     // ✅ Notificar éxito
     mostrarSuccess('Gasto eliminado con éxito');
@@ -369,71 +374,379 @@ if (!saldoNetoElement.querySelector('small')) {
   }
 }
 
-    function generarGraficos() {
-      if (!resumenActual) return;
+// Cargar resumen del mes en curso (dinámico)
+async function cargarResumenMesActual() {
+  try {
+    const now = new Date();
+    const anio = now.getFullYear();
+    const mes = now.getMonth() + 1;
 
-      // Gráfico de distribución
-      const ctxDist = document.getElementById('graficoDistribucion');
-      if (ctxDist) {
-        new Chart(ctxDist, {
-          type: 'doughnut',
-          data: {
-            labels: ['Abonado', 'Gastos'],
-            datasets: [{
-              data: [resumenActual.ventas.totalAbonado, resumenActual.gastos.total],
-              backgroundColor: ['#10b981', '#ef4444'],
-              borderWidth: 0
-            }]
-          },
-          options: {
-            responsive: true,
-            plugins: {
-              legend: {
-                position: 'bottom'
-              }
-            }
-          }
-        });
-      }
+    const res = await fetch(`${API_CONTABILIDAD}/resumen-mensual/${anio}/${mes}`, {
+      headers: obtenerHeaders()
+    });
 
-      // Gráfico de flujo de efectivo
-      const ctxFlujo = document.getElementById('graficoFlujo');
-      if (ctxFlujo) {
-        new Chart(ctxFlujo, {
-          type: 'bar',
-          data: {
-            labels: ['Ventas Totales', 'Dinero Cobrado', 'Gastos', 'Efectivo Final'],
-            datasets: [{
-              data: [
-                resumenActual.ventas.total,
-                resumenActual.ventas.totalAbonado,
-                resumenActual.gastos.total,
-                resumenActual.saldos.efectivoDisponible
-              ],
-              backgroundColor: ['#3b82f6', '#10b981', '#ef4444', '#f59e0b']
-            }]
-          },
-          options: {
-            responsive: true,
-            plugins: {
-              legend: {
-                display: false
-              }
-            },
-            scales: {
-              y: {
-                beginAtZero: true,
-                ticks: {
-                  callback: function(value) {
-                    return formatearPeso(value);
-                  }
-                }
-              }
-            }
-          }
-        });
-      }
+    if (!res.ok) throw new Error("Error al cargar resumen mes actual");
+
+    const data = await res.json();
+
+    document.getElementById("nombreMesActual").textContent =
+      now.toLocaleString("es-ES", { month: "long", year: "numeric" });
+
+    document.getElementById("ventasMesActual").textContent =
+      formatearPeso(data.ventas.total);
+
+    document.getElementById("saldoMesActual").textContent =
+      "Saldo Neto: " + formatearPeso(data.saldos.saldoNeto);
+
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+// Cargar historial de meses cerrados (guardados en BD)
+async function cargarHistorialMensual() {
+  try {
+    const filtroAnio = document.getElementById("anioFiltro").value;
+
+    const res = await fetch(`${API_CONTABILIDAD}/historial-mensual`, {
+      headers: obtenerHeaders()
+    });
+    if (!res.ok) throw new Error("Error al cargar historial mensual");
+
+    let historial = await res.json();
+    
+    // Obtener el año actual
+    const anioActual = new Date().getFullYear();
+
+    // Primera vez que se carga: llenar select con años únicos y seleccionar año actual
+    const anios = [...new Set(historial.map(h => h.anio))].sort((a, b) => b - a);
+    
+    // Asegurar que el año actual esté en la lista aunque no tenga datos
+    if (!anios.includes(anioActual)) {
+      anios.unshift(anioActual);
+      anios.sort((a, b) => b - a);
     }
+    
+    const select = document.getElementById("anioFiltro");
+    
+    // Solo actualizar el select si no tiene el filtro aplicado (evita reseteo)
+    if (!filtroAnio) {
+      select.innerHTML = '<option value="">Todos</option>' +
+        anios.map(a => `<option value="${a}" ${a == anioActual ? 'selected' : ''}>${a}</option>`).join("");
+    }
+
+    // Si no hay filtro aplicado, usar el año actual por defecto
+    const anioParaFiltrar = filtroAnio || anioActual;
+    
+    // Crear estructura completa de 12 meses para el año seleccionado
+    const mesesCompletos = await crearEstructuraMesesCompletos(anioParaFiltrar, historial);
+
+    // Referencias a los elementos
+    const tbody = document.getElementById("historialBody") || document.getElementById("tablaHistorialMensual");
+    const historialVacio = document.getElementById("historialVacio");
+    const tablaContainer = document.querySelector('.tabla-container');
+
+    // Función para obtener nombre del mes
+    const obtenerNombreMes = (numeroMes) => {
+      const meses = [
+        'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+        'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+      ];
+      return meses[numeroMes - 1] || `Mes ${numeroMes}`;
+    };
+
+    // Función para obtener clase CSS según el valor y tipo
+    const getClaseValor = (valor, tipo, tipoRegistro = 'cerrado') => {
+      let claseBase = '';
+      
+      if (tipoRegistro === 'sin-datos') {
+        return 'valor-sin-datos';
+      }
+      
+      if (tipoRegistro === 'dinamico') {
+        claseBase = 'valor-dinamico ';
+      }
+      
+      if (tipo === 'saldo') {
+        return claseBase + (valor > 0 ? 'valor-positivo valor-saldo' : 
+               valor < 0 ? 'valor-negativo valor-saldo' : 'valor-neutro valor-saldo');
+      } else if (tipo === 'ventas' || tipo === 'abonos') {
+        return claseBase + (valor > 0 ? 'valor-positivo valor-ventas' : 'valor-neutro valor-ventas');
+      } else {
+        return claseBase + (valor > 0 ? 'valor-negativo valor-gastos' : 'valor-neutro valor-gastos');
+      }
+    };
+
+    // Limpiar tabla
+    tbody.innerHTML = '';
+
+    // Mostrar tabla siempre (ya que siempre hay 12 meses)
+    if (tablaContainer) tablaContainer.style.display = 'block';
+    if (historialVacio) historialVacio.classList.add('oculto');
+
+    // Llenar tabla con todos los meses
+    mesesCompletos.forEach(mes => {
+  const fila = document.createElement('tr');
+  const fechaMes = `${obtenerNombreMes(mes.numeroMes)} ${mes.anio}`;
+  
+  // Agregar clases especiales según el tipo de registro
+  if (mes.tipoRegistro === 'sin-datos') {
+    fila.classList.add('mes-sin-datos');
+  } else if (mes.tipoRegistro === 'dinamico') {
+    fila.classList.add('mes-dinamico');
+  }
+
+  // Función para mostrar valor según el tipo
+  const mostrarValor = (valor, tipo) => {
+    if (mes.tipoRegistro === 'sin-datos') {
+      return '<span class="sin-datos">Sin datos</span>';
+    } else if (mes.tipoRegistro === 'dinamico') {
+      return `<span class="valor-temp">${formatearPeso(valor)} <small>(temporal)</small></span>`;
+    } else {
+      return formatearPeso(valor);
+    }
+  };
+
+  // Botón de cierre solo si es dinámico
+  const botonCierre = mes.tipoRegistro === 'dinamico'
+    ? `<button class="btn-cerrar" onclick="cerrarMes(${mes.anio}, ${mes.numeroMes})">Cerrar</button>`
+    : '';
+
+  fila.innerHTML = `
+    <td class="mes-col">
+      ${fechaMes}
+      ${mes.tipoRegistro === 'dinamico' ? '<span class="indicador-dinamico">🔄</span>' : ''}
+    </td>
+    <td class="${getClaseValor(mes.totalVentas, 'ventas', mes.tipoRegistro)}">
+      ${mostrarValor(mes.totalVentas, 'ventas')}
+    </td>
+    <td class="${getClaseValor(mes.totalGastos, 'gastos', mes.tipoRegistro)}">
+      ${mostrarValor(mes.totalGastos, 'gastos')}
+    </td>
+    <td class="${getClaseValor(mes.saldoNeto, 'saldo', mes.tipoRegistro)}">
+      ${mostrarValor(mes.saldoNeto, 'saldo')}
+    </td>
+    <td>
+      ${botonCierre}
+    </td>
+  `;
+  tbody.appendChild(fila);
+});
+
+
+    // Mostrar resumen del período seleccionado
+    const mesesConDatos = mesesCompletos.filter(m => m.tipoRegistro !== 'sin-datos');
+    if (mesesConDatos.length > 0) {
+      mostrarResumenPeriodo(mesesConDatos, anioParaFiltrar);
+    }
+
+  } catch (err) {
+    console.error('Error al cargar historial mensual:', err);
+    
+    // Mostrar error en la interfaz
+    const tbody = document.getElementById("historialBody") || document.getElementById("tablaHistorialMensual");
+    const historialVacio = document.getElementById("historialVacio");
+    
+    if (tbody) tbody.innerHTML = '';
+    
+    if (historialVacio) {
+      historialVacio.innerHTML = `
+        <div class="error">
+          <h4>Error al cargar datos</h4>
+          <p>No se pudieron cargar los datos del historial. Intenta nuevamente.</p>
+        </div>
+      `;
+      historialVacio.classList.remove('oculto');
+    }
+  }
+}
+
+async function cerrarMes(anio, mes) {
+  if (!confirm(`¿Seguro que deseas cerrar ${mes}/${anio}? Una vez cerrado, los valores quedarán fijos.`)) {
+    return;
+  }
+
+  try {
+    const res = await fetch(`${API_CONTABILIDAD}/cerrar-mes`, {
+      method: "POST",
+      headers: {
+        ...obtenerHeaders(),
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ anio, mes })
+    });
+
+    if (!res.ok) throw new Error("Error al cerrar mes");
+
+    const data = await res.json();
+    alert("✅ " + data.mensaje);
+
+    // Refrescar la tabla para que ya aparezca como cerrado
+    cargarHistorialMensual();
+
+  } catch (err) {
+    console.error("Error al cerrar mes:", err);
+    alert("❌ Error al cerrar mes");
+  }
+}
+
+
+// Función para cargar datos dinámicos de un mes específico
+async function cargarDatosDinamicosMes(anio, mes) {
+  try {
+    const res = await fetch(`${API_CONTABILIDAD}/resumen-mensual/${anio}/${mes}`, {
+      headers: obtenerHeaders()
+    });
+
+    if (!res.ok) {
+      // Si no hay datos, retornar estructura vacía
+      return {
+        totalVentas: 0,
+        totalGastos: 0,
+        saldoNeto: 0,
+        tieneRegistros: false
+      };
+    }
+
+    const data = await res.json();
+    
+    return {
+      totalVentas: data.ventas?.total || 0,
+      totalAbonos: data.abonos?.total || 0, // Ajusta según tu estructura de datos
+      totalGastos: data.gastos?.total || 0, // Ajusta según tu estructura de datos
+      saldoNeto: data.saldos?.saldoNeto || 0,
+      tieneRegistros: true
+    };
+
+  } catch (err) {
+    console.error(`Error al cargar datos dinámicos del mes ${mes}/${anio}:`, err);
+    return {
+      totalVentas: 0,
+      totalAbonos: 0,
+      totalGastos: 0,
+      saldoNeto: 0,
+      tieneRegistros: false
+    };
+  }
+}
+
+// Función para crear estructura completa de 12 meses con datos dinámicos
+async function crearEstructuraMesesCompletos(anio, historialDB) {
+  const mesesCompletos = [];
+  const anioActual = new Date().getFullYear();
+  const mesActual = new Date().getMonth() + 1;
+  
+  // Crear objeto lookup para búsqueda rápida de datos existentes (cerrados)
+  const datosExistentes = {};
+  historialDB.forEach(registro => {
+    if (registro.anio == anio) {
+      datosExistentes[registro.mes] = registro;
+    }
+  });
+  
+  // Generar los 12 meses
+  for (let mes = 1; mes <= 12; mes++) {
+    const datosDelMes = datosExistentes[mes];
+    
+    if (datosDelMes) {
+      // Mes con datos cerrados (registrados en BD)
+      mesesCompletos.push({
+        anio: parseInt(anio),
+        numeroMes: mes,
+        totalVentas: datosDelMes.totalVentas || 0,
+        totalAbonos: datosDelMes.totalAbonos || 0,
+        totalGastos: datosDelMes.totalGastos || 0,
+        saldoNeto: datosDelMes.saldoNeto || 0,
+        tipoRegistro: 'cerrado'
+      });
+    } else if (anio == anioActual) {
+      // Es del año actual, intentar cargar datos dinámicos
+      const datosDinamicos = await cargarDatosDinamicosMes(anio, mes);
+      
+      if (datosDinamicos.tieneRegistros || mes <= mesActual) {
+        // Mes con datos dinámicos (no cerrado pero con movimientos)
+        mesesCompletos.push({
+          anio: parseInt(anio),
+          numeroMes: mes,
+          totalVentas: datosDinamicos.totalVentas,
+          totalAbonos: datosDinamicos.totalAbonos,
+          totalGastos: datosDinamicos.totalGastos,
+          saldoNeto: datosDinamicos.saldoNeto,
+          tipoRegistro: 'dinamico'
+        });
+      } else {
+        // Mes futuro sin datos
+        mesesCompletos.push({
+          anio: parseInt(anio),
+          numeroMes: mes,
+          totalVentas: 0,
+          totalAbonos: 0,
+          totalGastos: 0,
+          saldoNeto: 0,
+          tipoRegistro: 'sin-datos'
+        });
+      }
+    } else {
+      // Año diferente al actual sin datos registrados
+      mesesCompletos.push({
+        anio: parseInt(anio),
+        numeroMes: mes,
+        totalVentas: 0,
+        totalAbonos: 0,
+        totalGastos: 0,
+        saldoNeto: 0,
+        tipoRegistro: 'sin-datos'
+      });
+    }
+  }
+  
+  // Ordenar por mes (enero a diciembre)
+  return mesesCompletos.sort((a, b) => a.numeroMes - b.numeroMes);
+}
+
+// Función para mostrar resumen del período
+function mostrarResumenPeriodo(historial, anio) {
+  const totalVentas = historial.reduce((sum, h) => sum + (h.totalVentas || 0), 0);
+  const totalAbonos = historial.reduce((sum, h) => sum + (h.totalAbonos || 0), 0);
+  const totalGastos = historial.reduce((sum, h) => sum + (h.totalGastos || 0), 0);
+  const saldoNeto = totalVentas + totalAbonos - totalGastos;
+  
+  const mesesCerrados = historial.filter(h => h.tipoRegistro === 'cerrado').length;
+  const mesesDinamicos = historial.filter(h => h.tipoRegistro === 'dinamico').length;
+
+  console.log(`Resumen ${anio || 'Total'} - Cerrados: ${mesesCerrados}, Dinámicos: ${mesesDinamicos}:`, {
+    totalVentas: formatearPeso(totalVentas),
+    totalAbonos: formatearPeso(totalAbonos),
+    totalGastos: formatearPeso(totalGastos),
+    saldoNeto: formatearPeso(saldoNeto)
+  });
+}
+
+// Función para refrescar datos dinámicos (útil para actualizaciones en tiempo real)
+async function refrescarDatosDinamicos() {
+  const anioSeleccionado = document.getElementById("anioFiltro").value || new Date().getFullYear();
+  const anioActual = new Date().getFullYear();
+  
+  // Solo refrescar si estamos viendo el año actual
+  if (anioSeleccionado == anioActual) {
+    await cargarHistorialMensual();
+  }
+}
+
+// Inicializar cuando se carga la página
+document.addEventListener('DOMContentLoaded', function() {
+  cargarHistorialMensual();
+  
+  // Opcional: Refrescar datos dinámicos cada 30 segundos si se está viendo el año actual
+  setInterval(() => {
+    const anioSeleccionado = document.getElementById("anioFiltro").value || new Date().getFullYear();
+    const anioActual = new Date().getFullYear();
+    
+    if (anioSeleccionado == anioActual) {
+      refrescarDatosDinamicos();
+    }
+  }, 30000); // 30 segundos
+});
 
     // Funciones de utilidad
     function formatearPeso(cantidad) {

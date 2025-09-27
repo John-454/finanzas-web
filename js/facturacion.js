@@ -536,7 +536,7 @@ function generarPDF(datosFactura) {
       img.crossOrigin = "Anonymous"; // Permite cargar imágenes externas si el servidor lo permite
       img.src = empresa.logo.startsWith('/') ? `${API_ORIGIN}${empresa.logo}` : empresa.logo;
       img.onload = function() {
-        doc.addImage(img, 'PNG', 130, 10, 80, 80); // x, y, width, height
+        doc.addImage(img, 'PNG', 130, 10, 80, 70); // x, y, width, height
         renderPDFContent();
         doc.save(`factura-${datosFactura.cliente}-${Date.now()}.pdf`);
       };

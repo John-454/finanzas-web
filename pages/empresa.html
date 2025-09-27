@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Mi Empresa - Gestión Financiera</title>
+   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏢</text></svg>">
   <link rel="stylesheet" href="../css/empresa.css">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
@@ -11,7 +12,10 @@
   <!-- Header -->
   <header class="header">
     <div class="header-content">
-      <h1><i class="fas fa-building"></i> Mi Empresa</h1>
+      <h1><i class="fas fa-building"></i> <span id="titleText">Mi Empresa</span></h1>
+      <button onclick="cerrarSesion()" class="btn btn-logout">
+        <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+      </button>
     </div>
   </header>
 
@@ -19,12 +23,24 @@
   <main class="main-content">
     <div class="container">
       <!-- Indicador de carga -->
-      <div id="loading" style="display:none;">Cargando...</div>
+      <div id="loading" style="display:none;">
+        <div class="loading-spinner">
+          <i class="fas fa-spinner fa-spin"></i> Cargando...
+        </div>
+      </div>
 
       <!-- Card principal de empresa -->
       <div id="empresaCard" style="display:none;">
         <div class="card-header">
-          <h2><i class="fas fa-plus-circle"></i> Datos de la Empresa</h2>
+          <h2><i class="fas fa-building"></i> Datos de la Empresa</h2>
+          <!-- Botón para editar (visible en modo vista) -->
+          <button id="btnEditar" class="btn btn-primary" onclick="toggleEditMode()">
+            <i class="fas fa-edit"></i> Editar
+          </button>
+          <!-- Botón para eliminar empresa (visible en modo edición) -->
+          <button id="btnEliminar" class="btn btn-danger" onclick="eliminarEmpresa()" style="display:none;">
+            <i class="fas fa-trash"></i> Eliminar Empresa
+          </button>
         </div>
 
         <form id="empresaForm" enctype="multipart/form-data">
@@ -37,9 +53,17 @@
                   <i class="fas fa-building logo-placeholder"></i>
                   <span class="logo-text">Sin Logo</span>
                 </div>
-                <label for="logoFile" class="btn btn-secondary">
-                  <i class="fas fa-camera"></i> Subir Logo
-                </label>
+                
+                <!-- Acciones del logo (solo visible en modo edición) -->
+                <div id="logoActions" style="display:none;">
+                  <label for="logoFile" class="btn btn-secondary">
+                    <i class="fas fa-camera"></i> Cambiar Logo
+                  </label>
+                  <button type="button" class="btn btn-danger" onclick="eliminarLogo()">
+                    <i class="fas fa-trash"></i> Eliminar Logo
+                  </button>
+                </div>
+                
                 <input type="file" id="logoFile" name="logo" accept="image/*" style="display: none;" onchange="previewLogo(this)">
               </div>
             </div>
@@ -48,30 +72,30 @@
             <div class="form-fields">
               <div class="form-group">
                 <label for="nombre"><i class="fas fa-building"></i> Nombre de la Empresa *</label>
-                <input type="text" id="nombre" name="nombre" required>
+                <input type="text" id="nombre" name="nombre" required disabled>
               </div>
 
               <div class="form-group">
                 <label for="contacto"><i class="fas fa-phone"></i> Número de Contacto *</label>
-                <input type="text" id="contacto" name="contacto" required>
+                <input type="text" id="contacto" name="contacto" required disabled>
               </div>
 
               <div class="form-group">
                 <label for="direccion"><i class="fas fa-map-marker-alt"></i> Dirección *</label>
-                <input type="text" id="direccion" name="direccion" required>
+                <input type="text" id="direccion" name="direccion" required disabled>
               </div>
 
               <div class="form-group">
                 <label for="ciudad"><i class="fas fa-city"></i> Ciudad *</label>
-                <input type="text" id="ciudad" name="ciudad" required>
+                <input type="text" id="ciudad" name="ciudad" required disabled>
               </div>
 
-              <!-- Form Actions -->
-              <div class="form-actions">
+              <!-- Form Actions (solo visible en modo edición) -->
+              <div id="formActions" class="form-actions" style="display:none;">
                 <button type="submit" class="btn btn-success">
-                  <i class="fas fa-save"></i> Guardar Empresa
+                  <i class="fas fa-save"></i> Guardar Cambios
                 </button>
-                <button type="reset" class="btn btn-secondary">
+                <button type="button" class="btn btn-secondary" onclick="cancelarEdicion()">
                   <i class="fas fa-times"></i> Cancelar
                 </button>
               </div>
@@ -81,62 +105,98 @@
       </div>
 
       <!-- Card para estado "sin empresa" -->
-      <div id="noEmpresaCard" style="display:none;">
-        <p>No tienes empresa registrada.</p>
-        <button id="btnCrearEmpresa" onclick="crearNuevaEmpresa()">Crear Empresa</button>
+      <div id="noEmpresaCard" class="no-empresa-card" style="display:none;">
+        <div class="empty-state">
+          <i class="fas fa-building empty-icon"></i>
+          <h3>No tienes empresa registrada</h3>
+          <p>Para comenzar a gestionar tus finanzas, primero debes crear tu empresa.</p>
+          <button id="btnCrearEmpresa" class="btn btn-primary" onclick="crearNuevaEmpresa()">
+            <i class="fas fa-plus"></i> Crear Empresa
+          </button>
+        </div>
       </div>
 
       <!-- Card para crear empresa -->
-      <div id="crearEmpresaCard" style="display:none;">
+      <div id="crearEmpresaCard" class="crear-empresa-card" style="display:none;">
+        <div class="card-header">
+          <h2><i class="fas fa-plus-circle"></i> Crear Nueva Empresa</h2>
+        </div>
+
         <form id="crearEmpresaForm" enctype="multipart/form-data">
-          <div class="form-group">
-            <label for="nombreNuevo">Nombre de la Empresa *</label>
-            <input type="text" id="nombreNuevo" name="nombreNuevo" required>
-          </div>
-          <div class="form-group">
-            <label for="contactoNuevo">Número de Contacto *</label>
-            <input type="text" id="contactoNuevo" name="contactoNuevo" required>
-          </div>
-          <div class="form-group">
-            <label for="direccionNuevo">Dirección *</label>
-            <input type="text" id="direccionNuevo" name="direccionNuevo" required>
-          </div>
-          <div class="form-group">
-            <label for="ciudadNuevo">Ciudad *</label>
-            <input type="text" id="ciudadNuevo" name="ciudadNuevo" required>
-          </div>
-          <div class="form-group">
-            <label for="logoFileNuevo">Logo</label>
-            <input type="file" id="logoFileNuevo" name="logoFileNuevo" accept="image/*" onchange="previewLogoNuevo(this)">
-            <div id="logoPreviewNuevo"></div>
-          </div>
-          <div class="form-actions">
-            <button type="submit" class="btn btn-success">Guardar Empresa</button>
-            <button type="reset" class="btn btn-secondary" onclick="cancelarCreacion()">Cancelar</button>
+          <div class="form-grid">
+            
+            <!-- Logo Section -->
+            <div class="logo-section">
+              <div class="logo-container">
+                <div id="logoPreviewNuevo" class="logo-preview">
+                  <i class="fas fa-building logo-placeholder"></i>
+                  <span class="logo-text">Sin Logo</span>
+                </div>
+                <label for="logoFileNuevo" class="btn btn-secondary">
+                  <i class="fas fa-camera"></i> Subir Logo
+                </label>
+                <input type="file" id="logoFileNuevo" name="logoFileNuevo" accept="image/*" style="display: none;" onchange="previewLogoNuevo(this)">
+              </div>
+            </div>
+
+            <!-- Form Fields -->
+            <div class="form-fields">
+              <div class="form-group">
+                <label for="nombreNuevo"><i class="fas fa-building"></i> Nombre de la Empresa *</label>
+                <input type="text" id="nombreNuevo" name="nombreNuevo" required>
+              </div>
+
+              <div class="form-group">
+                <label for="contactoNuevo"><i class="fas fa-phone"></i> Número de Contacto *</label>
+                <input type="text" id="contactoNuevo" name="contactoNuevo" required>
+              </div>
+
+              <div class="form-group">
+                <label for="direccionNuevo"><i class="fas fa-map-marker-alt"></i> Dirección *</label>
+                <input type="text" id="direccionNuevo" name="direccionNuevo" required>
+              </div>
+
+              <div class="form-group">
+                <label for="ciudadNuevo"><i class="fas fa-city"></i> Ciudad *</label>
+                <input type="text" id="ciudadNuevo" name="ciudadNuevo" required>
+              </div>
+
+              <!-- Form Actions -->
+              <div class="form-actions">
+                <button type="submit" class="btn btn-success">
+                  <i class="fas fa-save"></i> Crear Empresa
+                </button>
+                <button type="button" class="btn btn-secondary" onclick="cancelarCreacion()">
+                  <i class="fas fa-times"></i> Cancelar
+                </button>
+              </div>
+            </div>
           </div>
         </form>
       </div>
 
+      <!-- Toast de notificaciones -->
       <div id="toast" class="toast"></div>
+
+      <!-- Modal de confirmación -->
+      <div id="confirmModal" class="modal" style="display:none;">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h3 id="modalTitle">Confirmar</h3>
+            <span class="close" onclick="cerrarModal()">&times;</span>
+          </div>
+          <div class="modal-body">
+            <p id="modalMessage">¿Estás seguro?</p>
+          </div>
+          <div class="modal-footer">
+            <button id="modalConfirm" class="btn btn-danger">Confirmar</button>
+            <button class="btn btn-secondary" onclick="cerrarModal()">Cancelar</button>
+          </div>
+        </div>
+      </div>
     </div>
   </main>
 
-  <!-- Preview Script -->
-  <script>
-    function previewLogo(input) {
-      const file = input.files[0];
-      const preview = document.getElementById("logoPreview");
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = function (e) {
-          preview.innerHTML = `<img src="${e.target.result}" alt="Logo de la empresa">`;
-        };
-        reader.readAsDataURL(file);
-      } else {
-        preview.innerHTML = `<i class="fas fa-building logo-placeholder"></i><span class="logo-text">Sin Logo</span>`;
-      }
-    }
-  </script>
   <script src="../js/empresa.js"></script>
 </body>
 </html>

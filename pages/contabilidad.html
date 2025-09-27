@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Contabilidad Diaria</title>
+   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📊</text></svg>">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <link rel="stylesheet" href="../css/contabilidad.css" />
 </head>
@@ -20,14 +21,67 @@
 
     <div class="main-content">
       <div class="tabs">
-        <button class="tab active" onclick="cambiarTab('resumen')">📈 Resumen Diario</button>
+        <button class="tab active" onclick="cambiarTab('mes')">📅 Ingresos Mensuales </button>
+        <button class="tab" onclick="cambiarTab('resumen')">📈 Resumen Diario</button>
         <button class="tab" onclick="cambiarTab('gastos')">💰 Gestión de Gastos</button>
-        <button class="tab" onclick="cambiarTab('graficos')">📊 Gráficos</button>
         <button class="tab" onclick="cambiarTab('facturas')">📋 Facturas del Día</button>
       </div>
 
+      <!-- Tab Ingresos Mensuales -->
+<div id="mes-tab" class="tab-content active">
+  <div id="loading" class="loading oculto">
+          <p>Cargando datos...</p>
+        </div>
+  <div class="resumen-cards" id="resumen-mes-actual">
+    <div class="card ventas">
+      <h3>📅 Mes Actual</h3>
+      <p id="nombreMesActual">-</p>
+      <div class="valor" id="saldoMesActual">$0</div>
+      <small id="ventasMesActual">$0</small>
+    </div>
+  </div>
+
+  <!-- Sección del Historial de Cierres Mensuales -->
+<div class="historial-section">
+  <h3>📊 Historial de Cierres Mensuales</h3>
+  
+  <div class="filtros">
+    <label for="anioFiltro">Filtrar por Año:</label>
+    <select id="anioFiltro" onchange="cargarHistorialMensual()">
+      <option value="">Todos</option>
+      <!-- dinámicamente llenaremos con años disponibles -->
+    </select>
+  </div>
+
+  <div class="tabla-container">
+    <table class="historial-tabla" id="tablaHistorial">
+      <thead>
+        <tr>
+          <th class="mes-col">Mes</th>
+          <th>Total Ventas</th>
+          <th>Total Gastos</th>
+          <th>Saldo Neto</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody id="historialBody">
+        <!-- Los datos se cargarán dinámicamente aquí -->
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Mensaje cuando no hay datos -->
+  <div class="historial-vacio oculto" id="historialVacio">
+    <i>📈</i>
+    <h4>No hay datos disponibles</h4>
+    <p>Aún no hay registros para el período seleccionado</p>
+  </div>
+</div>
+</div>
+
+          
       <!-- Tab Resumen -->
-      <div id="resumen-tab" class="tab-content active">
+      <div id="resumen-tab" class="tab-content">
         <div id="loading" class="loading oculto">
           <p>Cargando datos...</p>
         </div>
@@ -35,7 +89,13 @@
         <div id="error-message" class="error oculto"></div>
         <div id="success-message" class="success oculto"></div>
 
-        <div class="resumen-cards" id="resumen-cards">
+        <!--<div class="resumen-cards" id="resumen-mes-actual-resumen">
+          <div class="card ventas">
+            <p id="nombreMesActualResumen">-</p>
+            <h3>📅 Mes Actual</h3>
+            <div class="valor" id="saldoMesActual">$0</div>
+          </div>-->
+
           <div class="card ventas">
             <h3>💵 Total Ventas</h3>
             <div class="valor" id="totalVentas">$0</div>
@@ -98,21 +158,6 @@
           <h3>📋 Gastos del Día</h3>
           <div id="lista-gastos">
             <div class="loading">No hay gastos registrados para esta fecha</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Tab Gráficos -->
-      <div id="graficos-tab" class="tab-content">
-        <div class="charts-container">
-          <div class="chart-card">
-            <h3>📊 Distribución Diaria</h3>
-            <canvas id="graficoDistribucion"></canvas>
-          </div>
-          
-          <div class="chart-card">
-            <h3>💰 Flujo de Efectivo</h3>
-            <canvas id="graficoFlujo"></canvas>
           </div>
         </div>
       </div>

@@ -311,3 +311,348 @@
         font-size: 1rem;
       }
     }
+
+    /* Estilos para el Historial de Cierres Mensuales */
+
+.historial-section {
+  background: white;
+  border-radius: 15px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+  overflow: hidden;
+  margin-bottom: 30px;
+}
+
+.historial-section h3 {
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  padding: 20px;
+  margin: 0;
+  color: #374151;
+  border-bottom: 2px solid #e5e7eb;
+  font-size: 1.3rem;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.filtros {
+  padding: 20px;
+  background: #fafbfc;
+  border-bottom: 1px solid #e5e7eb;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+.filtros label {
+  font-weight: 600;
+  color: #374151;
+  font-size: 0.95rem;
+}
+
+#anioFiltro {
+  padding: 8px 12px;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  background: white;
+  transition: all 0.3s ease;
+  min-width: 120px;
+}
+
+#anioFiltro:focus {
+  outline: none;
+  border-color: #4f46e5;
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+}
+
+.historial-tabla {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.historial-tabla thead {
+  background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+  color: white;
+}
+
+.historial-tabla th {
+  padding: 15px 12px;
+  text-align: left;
+  font-weight: 600;
+  font-size: 0.9rem;
+  border-right: 1px solid rgba(255,255,255,0.2);
+}
+
+.historial-tabla th:last-child {
+  border-right: none;
+}
+
+.historial-tabla tbody tr {
+  transition: background-color 0.2s ease;
+}
+
+.historial-tabla tbody tr:hover {
+  background-color: #f8fafc;
+}
+
+.historial-tabla tbody tr:nth-child(even) {
+  background-color: #fafbfc;
+}
+
+.historial-tabla td {
+  padding: 12px;
+  border-bottom: 1px solid #f1f5f9;
+  color: #374151;
+  font-size: 0.95rem;
+}
+
+.historial-tabla .mes-col {
+  font-weight: 600;
+  color: #1f2937;
+  width: 120px;
+}
+
+.historial-tabla .valor-positivo {
+  color: #10b981;
+  font-weight: 600;
+}
+
+.historial-tabla .valor-negativo {
+  color: #ef4444;
+  font-weight: 600;
+}
+
+.historial-tabla .valor-neutro {
+  color: #6b7280;
+  font-weight: 600;
+}
+
+/* Indicadores visuales para los valores */
+.valor-ventas {
+  position: relative;
+}
+
+.valor-ventas::before {
+  content: '';
+  position: absolute;
+  left: -8px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 60%;
+  background: #10b981;
+  border-radius: 2px;
+}
+
+.valor-gastos {
+  position: relative;
+}
+
+.valor-gastos::before {
+  content: '';
+  position: absolute;
+  left: -8px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 60%;
+  background: #ef4444;
+  border-radius: 2px;
+}
+
+.valor-saldo {
+  position: relative;
+  font-weight: 700;
+}
+
+.valor-saldo::before {
+  content: '';
+  position: absolute;
+  left: -8px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 60%;
+  background: #3b82f6;
+  border-radius: 2px;
+}
+
+/* Estado vacío */
+.historial-vacio {
+  text-align: center;
+  padding: 40px 20px;
+  color: #6b7280;
+}
+
+.historial-vacio i {
+  font-size: 3rem;
+  margin-bottom: 15px;
+  opacity: 0.5;
+}
+
+.historial-vacio h4 {
+  margin-bottom: 10px;
+  color: #374151;
+}
+
+/* Estilos para meses sin datos */
+.mes-sin-datos {
+  background-color: #f9fafb !important;
+  opacity: 0.7;
+}
+
+.mes-sin-datos:hover {
+  background-color: #f3f4f6 !important;
+}
+
+.valor-sin-datos {
+  color: #9ca3af;
+  font-style: italic;
+}
+
+.sin-datos {
+  color: #9ca3af;
+  font-size: 0.85rem;
+  font-style: italic;
+}
+
+/* Estilos para meses con datos dinámicos */
+.mes-dinamico {
+  background: linear-gradient(90deg, #fef3c7 0%, #fefbf3 50%, #ffffff 100%) !important;
+  border-left: 3px solid #f59e0b;
+  animation: pulso-sutil 3s ease-in-out infinite;
+}
+
+.mes-dinamico:hover {
+  background: linear-gradient(90deg, #fde68a 0%, #fef3c7 50%, #f9fafb 100%) !important;
+}
+
+.valor-dinamico {
+  position: relative;
+}
+
+.valor-dinamico::after {
+  content: '🔄';
+  position: absolute;
+  top: -2px;
+  right: -18px;
+  font-size: 0.75rem;
+  opacity: 0.6;
+  animation: rotar 2s linear infinite;
+}
+
+.valor-temp small {
+  color: #92400e;
+  font-weight: 500;
+  font-size: 0.75rem;
+}
+
+.indicador-dinamico {
+  font-size: 0.8rem;
+  margin-left: 5px;
+  opacity: 0.7;
+  animation: parpadeo 2s ease-in-out infinite;
+}
+
+/* Animaciones */
+@keyframes pulso-sutil {
+  0%, 100% { 
+    box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.1); 
+  }
+  50% { 
+    box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.05); 
+  }
+}
+
+@keyframes rotar {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes parpadeo {
+  0%, 100% { opacity: 0.7; }
+  50% { opacity: 0.3; }
+}
+
+/* Distinguir datos temporales en la tabla */
+.mes-dinamico .valor-positivo {
+  color: #059669;
+  background: rgba(16, 185, 129, 0.05);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.mes-dinamico .valor-negativo {
+  color: #dc2626;
+  background: rgba(239, 68, 68, 0.05);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.mes-dinamico .valor-neutro {
+  color: #6b7280;
+  background: rgba(107, 114, 128, 0.05);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+/* Animación sutil para filas sin datos */
+.mes-sin-datos td {
+  position: relative;
+}
+
+.mes-sin-datos td::before {
+  content: '';
+  position: absolute;
+  left: -8px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 60%;
+  background: #d1d5db;
+  border-radius: 2px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .historial-tabla {
+    font-size: 0.85rem;
+  }
+  
+  .historial-tabla th,
+  .historial-tabla td {
+    padding: 10px 8px;
+  }
+  
+  .filtros {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  #anioFiltro {
+    width: 100%;
+  }
+  
+  /* Hacer la tabla scrolleable horizontalmente en móviles */
+  .tabla-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  .historial-tabla {
+    min-width: 600px;
+  }
+}
+
+@media (max-width: 480px) {
+  .historial-section h3 {
+    font-size: 1.1rem;
+    padding: 15px;
+  }
+  
+  .historial-tabla th,
+  .historial-tabla td {
+    padding: 8px 6px;
+  }
+}
