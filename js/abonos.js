@@ -1,5 +1,5 @@
-//const API_URL = 'https://api-finanzas-vk8w.onrender.com/api/facturas';
-const API_URL = 'http://localhost:3000/api/facturas';
+const API_URL = 'https://api-finanzas-vk8w.onrender.com/api/facturas';
+//const API_URL = 'http://localhost:3000/api/facturas';
 
 let facturas = [];
 let facturaSeleccionada = null;

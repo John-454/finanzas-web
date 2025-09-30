@@ -1,5 +1,5 @@
-//const API_URL = 'https://api-finanzas-vk8w.onrender.com/api/productos';
-const API_URL = 'http://localhost:3000/api/productos';
+const API_URL = 'https://api-finanzas-vk8w.onrender.com/api/productos';
+//const API_URL = 'http://localhost:3000/api/productos';
 
 document.addEventListener('DOMContentLoaded', cargarProductos);
 
