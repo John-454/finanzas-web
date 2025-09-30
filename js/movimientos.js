@@ -1,6 +1,6 @@
 // Configuración de la API
 //const API_ROOT = 'http://localhost:3000';
-const API_ROOT = (typeof window !== 'undefined' && window.API_ROOT) || localStorage.getItem('API_ROOT') || 'https://api-finanzas-vk8w.onrender.com';
+const API_ROOT = 'https://api-finanzas-vk8w.onrender.com';
 const API_MOVIMIENTOS = `${API_ROOT}/api/movimientos`;
 
 let datosActuales = null;
