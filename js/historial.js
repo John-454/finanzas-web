@@ -168,7 +168,7 @@ function mostrarFacturas(facturas) {
           <div class="abono-label">${ultimoAbono ? 'Último abono' : 'Sin abonos'}</div>
           <div class="abono-info">
             ${ultimoAbono 
-              ? `${ultimoAbono.monto.toLocaleString()} - ${new Date(ultimoAbono.fecha).toLocaleDateString()}`
+              ? `$${ultimoAbono.monto.toLocaleString()} - ${new Date(ultimoAbono.fecha).toLocaleDateString()} - ${ultimoAbono.tipo ? `<span class="tipo-abono">${ultimoAbono.tipo === 'efectivo' ? '💵 Efectivo' : '📱 Nequi'}</span>` : ''}`
               : 'No se han registrado abonos'
             }
           </div>
@@ -470,14 +470,16 @@ function generarPDFFactura(datosFactura) {
       doc.text(`Saldo: ${saldo.toFixed(2)}`, 150, finalY + 20);
 
       // Historial de abonos
+      // Historial de abonos
       if (datosFactura.historialAbonos && datosFactura.historialAbonos.length > 0) {
         doc.setFontSize(14);
         doc.text("Historial de Abonos:", 20, finalY + 40);
         
-        const columnasAbonos = ['Fecha', 'Monto'];
+        const columnasAbonos = ['Fecha', 'Monto', 'Tipo'];
         const filasAbonos = datosFactura.historialAbonos.map(abono => [
           new Date(abono.fecha).toLocaleDateString(),
-          `${abono.monto.toFixed(2)}`
+          `${abono.monto.toFixed(2)}`,
+          abono.tipo ? (abono.tipo === 'efectivo' ? 'Efectivo' : 'Nequi') : 'N/A'
         ]);
 
         doc.autoTable({

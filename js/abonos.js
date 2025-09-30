@@ -1,5 +1,5 @@
-const API_URL = 'https://api-finanzas-vk8w.onrender.com/api/facturas';
-//const API_URL = 'http://localhost:3000/api/facturas';
+//const API_URL = 'https://api-finanzas-vk8w.onrender.com/api/facturas';
+const API_URL = 'http://localhost:3000/api/facturas';
 
 let facturas = [];
 let facturaSeleccionada = null;
@@ -135,8 +135,14 @@ function cerrarModal() {
 
 function registrarAbono() {
   const monto = Number(document.getElementById('nuevoAbono').value);
+  const tipo = document.getElementById('nuevoTipoAbono').value;
+
   if (!monto || isNaN(monto) || monto <= 0) {
     alert('Ingrese un monto válido.');
+    return;
+  }
+  if (!tipo) {
+    alert('Debe seleccionar un tipo de abono.');
     return;
   }
 
@@ -147,8 +153,6 @@ function registrarAbono() {
   }
 
   const token = localStorage.getItem('token');
-
-  // Deshabilitar botón para evitar doble clic
   const botonGuardar = document.getElementById('guardarBtn');
   const textoOriginal = botonGuardar.textContent;
   botonGuardar.disabled = true;
@@ -160,23 +164,18 @@ function registrarAbono() {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${token}`
     },
-    body: JSON.stringify({ abono: monto }),
+    body: JSON.stringify({ abono: monto, tipo })
   })
     .then(res => {
-      if (!res.ok) {
-        throw new Error('Error al registrar el abono');
-      }
-      return res.text();
+      if (!res.ok) throw new Error('Error al registrar el abono');
+      return res.json(); // ✅ CAMBIO: Ahora esperamos JSON en lugar de text()
     })
-    .then(() => {
-      alert('Abono registrado correctamente');
+    .then(data => {
+      // ✅ CAMBIO: Mostramos el mensaje de éxito del backend
+      alert(data.mensaje || 'Abono registrado correctamente');
       cerrarModal();
-      // Recargar las facturas actualizadas
-      return fetch(API_URL, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
+      // Recargar las facturas
+      return fetch(API_URL, { headers: { 'Authorization': `Bearer ${token}` } });
     })
     .then(res => res.json())
     .then(data => {
@@ -188,11 +187,11 @@ function registrarAbono() {
       alert('Error al registrar el abono');
     })
     .finally(() => {
-      // Rehabilitar botón
       botonGuardar.disabled = false;
       botonGuardar.textContent = textoOriginal;
     });
 }
+
 
 // Cerrar modal al hacer clic fuera de él
 window.onclick = function(event) {

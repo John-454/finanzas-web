@@ -39,6 +39,14 @@
       <p><strong>Saldo pendiente:</strong> $<span id="modalSaldo"></span></p>
 
       <input type="number" id="nuevoAbono" placeholder="Ingrese monto del abono" />
+      
+      <!-- Tipo de abono -->
+      <select id="nuevoTipoAbono">
+        <option value="">-- Seleccione tipo --</option>
+        <option value="efectivo">Efectivo</option>
+        <option value="nequi">Nequi</option>
+      </select>
+
       <button id="guardarBtn" onclick="registrarAbono()">Guardar Abono</button>
     </div>
   </div>

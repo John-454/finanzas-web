@@ -1,8 +1,8 @@
 // Detección automática de entorno
 const isDevelopment = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
 // Configuración de la API
-const API_ROOT = (typeof window !== 'undefined' && window.API_ROOT) || localStorage.getItem('API_ROOT') || 'https://api-finanzas-vk8w.onrender.com';
-//const API_ROOT = 'http://localhost:3000';
+//const API_ROOT = (typeof window !== 'undefined' && window.API_ROOT) || localStorage.getItem('API_ROOT') || 'https://api-finanzas-vk8w.onrender.com';
+const API_ROOT = 'http://localhost:3000';
 const API_CONTABILIDAD = `${API_ROOT}/api/contabilidad`;
 const API_FACTURAS = `${API_ROOT}/api/facturas`;
 let resumenActual = null;
@@ -33,13 +33,17 @@ function obtenerHeaders() {
     };
 
     function mostrarHoy() {
-      // Usar fecha en hora local, no UTC, para evitar desfaces de día
-      const now = new Date();
-      const tzoffset = now.getTimezoneOffset() * 60000; // minutos -> ms
-      const localISODate = new Date(now - tzoffset).toISOString().split('T')[0];
-      document.getElementById('fechaSeleccionada').value = localISODate;
-      cargarResumenDia();
-    }
+  const now = new Date();
+  const y = now.getFullYear();
+  const m = String(now.getMonth() + 1).padStart(2, '0');
+  const d = String(now.getDate()).padStart(2, '0');
+  const localDate = `${y}-${m}-${d}`;
+  
+  document.getElementById('fechaSeleccionada').value = localDate;
+  cargarResumenDia();
+}
+
+
 
     function cambiarTab(tab, evt) {
   // Ocultar todos los tabs
@@ -261,11 +265,11 @@ async function cargarFacturasPorFechaFallback(fecha) {
       const efectivoEl = document.getElementById('efectivoDisponible');
       
       const saldoNetoElement = document.getElementById('saldoNeto').parentElement;
-const descripcionSaldo = saldoNetoElement.querySelector('small') || document.createElement('small');
-descripcionSaldo.textContent = 'Abonos - Gastos'; // Cambiar de "Ventas - Gastos"
-if (!saldoNetoElement.querySelector('small')) {
-  saldoNetoElement.appendChild(descripcionSaldo);
-}
+      const descripcionSaldo = saldoNetoElement.querySelector('small') || document.createElement('small');
+      descripcionSaldo.textContent = 'Abonos - Gastos'; // Cambiar de "Abonos - Gastos"
+      if (!saldoNetoElement.querySelector('small')) {
+        saldoNetoElement.appendChild(descripcionSaldo);
+      }
 
       if (resumen.saldos.saldoNeto >= 0) {
         saldoCard.style.borderLeftColor = '#10b981';
@@ -291,26 +295,37 @@ if (!saldoNetoElement.querySelector('small')) {
         return;
       }
 
-      lista.innerHTML = gastos.map(gasto => `
+      lista.innerHTML = gastos.map(gasto => {
+      const iconoTipo = gasto.tipo === 'nequi' ? '📱' : '💵';
+      const textoTipo = gasto.tipo === 'nequi' ? 'Nequi' : 'Efectivo';
+      
+      return `
         <div class="gasto-item">
           <div class="gasto-info">
             <h4>${gasto.descripcion}</h4>
             <small>Categoría: ${gasto.categoria} | ${new Date(gasto.fecha).toLocaleTimeString()}</small>
+            <div style="margin-top: 5px;">
+              <span style="background: #f0f9ff; color: #0369a1; padding: 2px 8px; border-radius: 12px; font-size: 0.85em; font-weight: 600;">
+                ${iconoTipo} ${textoTipo}
+              </span>
+            </div>
           </div>
           <div style="display: flex; align-items: center; gap: 15px;">
             <div class="gasto-monto">${formatearPeso(gasto.monto)}</div>
             <button class="btn-danger" onclick="eliminarGasto('${gasto._id}')">🗑️</button>
           </div>
         </div>
-      `).join('');
+      `;
+    }).join('');
     }
 
     async function agregarGasto(event) {
-  event.preventDefault();
+    event.preventDefault();
   
   const descripcion = document.getElementById('descripcionGasto').value;
   const monto = parseFloat(document.getElementById('montoGasto').value);
   const categoria = document.getElementById('categoriaGasto').value;
+  const tipo = document.getElementById('tipoGasto').value;
   const fechaInput = document.getElementById('fechaSeleccionada').value;
 
   console.log('Fecha input:', fechaInput); // DEBUG
@@ -328,6 +343,7 @@ if (!saldoNetoElement.querySelector('small')) {
         descripcion,
         monto,
         categoria,
+        tipo, // AGREGADO
         fecha: fechaInput
       })
     });

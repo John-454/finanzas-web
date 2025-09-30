@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Control de Movimientos</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📈</text></svg>">
+  <link rel="stylesheet" href="../css/movimientos.css" />
+</head>
+<body>
+  <div class="container">
+    <header class="header">
+      <h1>💰 Control de Movimientos - Efectivo vs Nequi</h1>
+      <div class="fecha-selector">
+        <input type="date" id="fechaSeleccionada" />
+        <button class="btn-primary" onclick="cargarDatos()">Consultar</button>
+        <button class="btn-secondary" onclick="mostrarHoy()">Hoy</button>
+      </div>
+    </header>
+
+    <!-- Loading State -->
+    <div id="loading" class="loading oculto">
+      <div class="loading-spinner"></div>
+      <p>Cargando datos...</p>
+    </div>
+
+    <!-- Error State -->
+    <div id="error" class="error-message oculto"></div>
+
+    <!-- Empty State -->
+    <div id="emptyState" class="empty-state oculto">
+      <div class="empty-icon">📈</div>
+      <h3>No hay movimientos registrados</h3>
+      <p>No se encontraron movimientos para la fecha seleccionada</p>
+    </div>
+
+    <!-- Tarjetas de Resumen -->
+    <div id="resumenCards" class="resumen-cards oculto">
+      <!-- Totales Generales -->
+      <div class="card card-total">
+        <div class="card-header">
+          <h3>💵 Total General</h3>
+        </div>
+        <div class="card-body">
+          <div class="saldo-principal" id="saldoTotal">$0</div>
+          <div class="desglose">
+            <div class="desglose-item">
+              <span class="label">Abonos:</span>
+              <span class="valor positivo" id="totalAbonos">$0</span>
+            </div>
+            <div class="desglose-item">
+              <span class="label">Gastos:</span>
+              <span class="valor negativo" id="totalGastos">$0</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Efectivo -->
+      <div class="card card-efectivo">
+        <div class="card-header">
+          <h3>💵 Efectivo</h3>
+        </div>
+        <div class="card-body">
+          <div class="saldo-principal" id="saldoEfectivo">$0</div>
+          <div class="desglose">
+            <div class="desglose-item">
+              <span class="label">Abonos:</span>
+              <span class="valor" id="abonosEfectivo">$0</span>
+            </div>
+            <div class="desglose-item">
+              <span class="label">Gastos:</span>
+              <span class="valor" id="gastosEfectivo">$0</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Nequi -->
+      <div class="card card-nequi">
+        <div class="card-header">
+          <h3>📱 Nequi</h3>
+        </div>
+        <div class="card-body">
+          <div class="saldo-principal" id="saldoNequi">$0</div>
+          <div class="desglose">
+            <div class="desglose-item">
+              <span class="label">Abonos:</span>
+              <span class="valor" id="abonosNequi">$0</span>
+            </div>
+            <div class="desglose-item">
+              <span class="label">Gastos:</span>
+              <span class="valor" id="gastosNequi">$0</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div id="tabsContainer" class="tabs-container oculto">
+      <div class="tabs">
+        <button class="tab active" onclick="cambiarTab('resumen')">📊 Resumen</button>
+        <button class="tab" onclick="cambiarTab('abonos')">💰 Abonos</button>
+        <button class="tab" onclick="cambiarTab('gastos')">💸 Gastos</button>
+        <button class="tab" onclick="cambiarTab('detalle')">📋 Detalle Completo</button>
+      </div>
+
+      <!-- Tab Resumen -->
+      <div id="resumen-tab" class="tab-content active">
+        <div class="tabla-wrapper">
+          <table class="tabla-excel">
+            <thead>
+              <tr>
+                <th>Tipo</th>
+                <th>Efectivo</th>
+                <th>Nequi</th>
+                <th>Total</th>
+              </tr>
+            </thead>
+            <tbody id="tablaResumen">
+              <!-- Datos dinámicos -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Tab Abonos -->
+      <div id="abonos-tab" class="tab-content">
+        <div class="tabla-wrapper">
+          <table class="tabla-excel">
+            <thead>
+              <tr>
+                <th>Hora</th>
+                <th>Cliente</th>
+                <th>Método de Pago</th>
+                <th>Monto</th>
+              </tr>
+            </thead>
+            <tbody id="tablaAbonos">
+              <!-- Datos dinámicos -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Tab Gastos -->
+      <div id="gastos-tab" class="tab-content">
+        <div class="tabla-wrapper">
+          <table class="tabla-excel">
+            <thead>
+              <tr>
+                <th>Hora</th>
+                <th>Descripción</th>
+                <th>Método de Pago</th>
+                <th>Monto</th>
+              </tr>
+            </thead>
+            <tbody id="tablaGastos">
+              <!-- Datos dinámicos -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Tab Detalle Completo -->
+      <div id="detalle-tab" class="tab-content">
+        <div class="tabla-wrapper">
+          <table class="tabla-excel">
+            <thead>
+              <tr>
+                <th>Hora</th>
+                <th>Tipo</th>
+                <th>Descripción</th>
+                <th>Método</th>
+                <th>Monto</th>
+              </tr>
+            </thead>
+            <tbody id="tablaDetalle">
+              <!-- Datos dinámicos -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="../js/movimientos.js"></script>
+</body>
+</html>

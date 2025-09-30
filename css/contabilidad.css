@@ -656,3 +656,21 @@
     padding: 8px 6px;
   }
 }
+
+/* Estilos para el badge de tipo de pago en gastos */
+.tipo-pago-badge {
+  display: inline-block;
+  background: #f0f9ff;
+  color: #0369a1;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 0.85em;
+  font-weight: 600;
+  margin-top: 5px;
+}
+
+/* Mejorar espaciado en gasto-info */
+.gasto-info small {
+  display: block;
+  margin-bottom: 5px;
+}

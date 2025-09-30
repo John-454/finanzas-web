@@ -274,11 +274,16 @@ function actualizarTablaProductos() {
       <td>${producto.nombre}</td>
       <td>$${producto.precio.toFixed(2)}</td>
       <td>
-        <button onclick="cambiarCantidad(${index}, -1)" class="btn-cantidad">-</button>
-        <span class="cantidad">${producto.cantidad}</span>
-        <button onclick="cambiarCantidad(${index}, 1)" class="btn-cantidad">+</button>
+        <input 
+          type="number" 
+          min="1" 
+          value="${producto.cantidad}" 
+          onchange="cambiarCantidadManual(${index}, this.value)" 
+          class="input-cantidad"
+        >
         <button onclick="eliminarProducto(${index})" class="btn-eliminar">🗑️</button>
       </td>
+
       <td>$${total.toFixed(2)}</td>
     `;
     
@@ -303,6 +308,23 @@ function cambiarCantidad(index, cambio) {
   actualizarTablaProductos();
   logger.log(`🔢 Cantidad actualizada: ${productosSeleccionados[index].nombre} = ${productosSeleccionados[index].cantidad}`);
 }
+
+// Cambiar cantidad manualmente desde input
+function cambiarCantidadManual(index, nuevaCantidad) {
+  if (index < 0 || index >= productosSeleccionados.length) return;
+
+  let cantidad = parseInt(nuevaCantidad, 10);
+
+  if (isNaN(cantidad) || cantidad < 1) {
+    cantidad = 1; // Valor mínimo
+  }
+
+  productosSeleccionados[index].cantidad = cantidad;
+
+  actualizarTablaProductos();
+  logger.log(`✏️ Cantidad actualizada manualmente: ${productosSeleccionados[index].nombre} = ${cantidad}`);
+}
+
 
 // Eliminar producto
 function eliminarProducto(index) {
@@ -419,19 +441,22 @@ async function guardarNuevoProducto() {
 
 // Guardar factura
 async function guardarFactura() {
-  // Obtén los valores del formulario
   const cliente = document.getElementById('cliente').value.trim();
   const abono = parseFloat(document.getElementById('abono').value) || 0;
+  const tipoAbono = document.getElementById('tipoAbono').value; // 👈 nuevo
   const total = calcularTotal();
   const saldo = total - abono;
 
-  // Validación básica
   if (!cliente || productosSeleccionados.length === 0) {
     alert('Debes ingresar un cliente y al menos un producto.');
     return;
   }
 
-  // Limpia los productos para enviar solo lo necesario
+  if (abono > 0 && !tipoAbono) {
+    alert('Debes seleccionar un tipo de abono.');
+    return;
+  }
+
   const productosParaFactura = productosSeleccionados.map(p => ({
     nombre: p.nombre,
     cantidad: p.cantidad,
@@ -443,7 +468,8 @@ async function guardarFactura() {
     productos: productosParaFactura,
     total,
     abono,
-    saldo
+    saldo,
+    tipoAbono // 👈 nuevo
   };
 
   try {
@@ -458,18 +484,14 @@ async function guardarFactura() {
     }
 
     alert('Factura guardada correctamente');
-
-    // Genera y descarga el PDF localmente
     generarPDF(datosFactura);
-
-    // Limpia la interfaz si lo deseas
     limpiarFormulario();
   } catch (error) {
     alert('Error al guardar factura: ' + error.message);
     console.error('Error al guardar factura:', error);
   }
-
 }
+
 
 // ========================================
 // GENERAR PDF

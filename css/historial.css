@@ -701,3 +701,22 @@ h1 {
     flex-direction: column;
   }
 }
+
+/* Estilos para tipo de abono */
+.tipo-abono {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 0.85em;
+  font-weight: 600;
+  background-color: #f0f9ff;
+  color: #0369a1;
+  margin-left: 8px;
+}
+
+.abono-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}

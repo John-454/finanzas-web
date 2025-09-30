@@ -1,0 +1,412 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 100vh;
+  padding: 20px;
+}
+
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* Header */
+.header {
+  background: white;
+  padding: 25px;
+  border-radius: 15px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  margin-bottom: 30px;
+}
+
+.header h1 {
+  color: #2d3748;
+  font-size: 2em;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.fecha-selector {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.fecha-selector input[type="date"] {
+  padding: 12px 20px;
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 1em;
+  transition: all 0.3s;
+}
+
+.fecha-selector input[type="date"]:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.btn-primary, .btn-secondary {
+  padding: 12px 30px;
+  border: none;
+  border-radius: 8px;
+  font-size: 1em;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+}
+
+.btn-secondary {
+  background: white;
+  color: #667eea;
+  border: 2px solid #667eea;
+}
+
+.btn-secondary:hover {
+  background: #667eea;
+  color: white;
+}
+
+/* Loading */
+.loading {
+  background: white;
+  padding: 60px;
+  border-radius: 15px;
+  text-align: center;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.loading-spinner {
+  border: 4px solid #f3f4f6;
+  border-top: 4px solid #667eea;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 20px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loading p {
+  color: #6b7280;
+  font-size: 1.1em;
+}
+
+/* Error */
+.error-message {
+  background: #fee2e2;
+  border-left: 4px solid #dc2626;
+  padding: 20px;
+  border-radius: 8px;
+  color: #991b1b;
+  margin-bottom: 20px;
+}
+
+/* Empty State */
+.empty-state {
+  background: white;
+  padding: 60px;
+  border-radius: 15px;
+  text-align: center;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.empty-icon {
+  font-size: 5em;
+  margin-bottom: 20px;
+}
+
+.empty-state h3 {
+  color: #2d3748;
+  margin-bottom: 10px;
+}
+
+.empty-state p {
+  color: #6b7280;
+}
+
+/* Resumen Cards */
+.resumen-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+  margin-bottom: 30px;
+}
+
+.card {
+  background: white;
+  border-radius: 15px;
+  padding: 25px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+}
+
+.card-total {
+  border-top: 5px solid #8b5cf6;
+}
+
+.card-efectivo {
+  border-top: 5px solid #10b981;
+}
+
+.card-nequi {
+  border-top: 5px solid #3b82f6;
+}
+
+.card-header h3 {
+  color: #2d3748;
+  font-size: 1.3em;
+  margin-bottom: 20px;
+}
+
+.saldo-principal {
+  font-size: 2.5em;
+  font-weight: bold;
+  margin-bottom: 20px;
+  color: #2d3748;
+}
+
+.saldo-principal.positivo {
+  color: #10b981;
+}
+
+.saldo-principal.negativo {
+  color: #ef4444;
+}
+
+.desglose {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.desglose-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px;
+  background: #f9fafb;
+  border-radius: 8px;
+}
+
+.desglose-item .label {
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.desglose-item .valor {
+  font-weight: 600;
+  color: #2d3748;
+}
+
+.desglose-item .valor.positivo {
+  color: #10b981;
+}
+
+.desglose-item .valor.negativo {
+  color: #ef4444;
+}
+
+/* Tabs */
+.tabs-container {
+  background: white;
+  border-radius: 15px;
+  padding: 25px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.tabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 25px;
+  flex-wrap: wrap;
+  border-bottom: 2px solid #e5e7eb;
+  padding-bottom: 10px;
+}
+
+.tab {
+  padding: 12px 25px;
+  border: none;
+  background: transparent;
+  color: #6b7280;
+  font-weight: 600;
+  cursor: pointer;
+  border-radius: 8px 8px 0 0;
+  transition: all 0.3s;
+}
+
+.tab:hover {
+  background: #f3f4f6;
+  color: #667eea;
+}
+
+.tab.active {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.tab-content {
+  display: none;
+}
+
+.tab-content.active {
+  display: block;
+  animation: fadeIn 0.3s;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Tabla Excel Style */
+.tabla-wrapper {
+  overflow-x: auto;
+}
+
+.tabla-excel {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95em;
+}
+
+.tabla-excel thead {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.tabla-excel th {
+  padding: 15px;
+  text-align: left;
+  font-weight: 600;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.tabla-excel tbody tr {
+  transition: background 0.2s;
+}
+
+.tabla-excel tbody tr:nth-child(even) {
+  background: #f9fafb;
+}
+
+.tabla-excel tbody tr:hover {
+  background: #e0e7ff;
+}
+
+.tabla-excel td {
+  padding: 12px 15px;
+  border: 1px solid #e5e7eb;
+}
+
+.fila-total {
+  background: #f3f4f6 !important;
+  font-weight: 700;
+}
+
+.fila-total td {
+  border-top: 3px solid #667eea !important;
+}
+
+.tipo-cell {
+  font-weight: 600;
+}
+
+.tipo-cell.abono {
+  color: #10b981;
+}
+
+.tipo-cell.gasto {
+  color: #ef4444;
+}
+
+.monto-positivo {
+  color: #10b981;
+  font-weight: 600;
+}
+
+.monto-negativo {
+  color: #ef4444;
+  font-weight: 600;
+}
+
+.monto-positivo.total,
+.monto-negativo.total {
+  font-size: 1.1em;
+  background: #f3f4f6;
+}
+
+.sin-datos {
+  text-align: center;
+  color: #9ca3af;
+  font-style: italic;
+  padding: 40px !important;
+}
+
+/* Badges */
+.badge {
+  display: inline-block;
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 0.85em;
+  font-weight: 600;
+}
+
+.badge.efectivo {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.badge.nequi {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.badge-tipo {
+  display: inline-block;
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 0.85em;
+  font-weight: 600;
+}
+
+.badge-tipo.abono {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.badge-tipo.gasto {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.oculto {
+  display: none !important;
+}

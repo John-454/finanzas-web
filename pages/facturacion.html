@@ -64,6 +64,16 @@
       <input type="number" id="abono" placeholder="Ingrese abono" oninput="actualizarTotales()" />
     </div>
 
+    <!-- Tipo de abono -->
+    <div class="form-group">
+      <label for="tipoAbono">Tipo de abono:</label>
+      <select id="tipoAbono">
+        <option value="">-- Seleccione --</option>
+        <option value="efectivo">Efectivo</option>
+        <option value="nequi">Nequi</option>
+      </select>
+    </div>
+
     <!-- Totales -->
     <div class="totales">
       <p><strong>Total:</strong> $<span id="total">0</span></p>
