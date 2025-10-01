@@ -514,23 +514,29 @@ function generarPDF(datosFactura) {
 
     // Renderizar el contenido del PDF
     function renderPDFContent() {
-      // Datos de empresa
-      doc.setFontSize(16);
+      // ========== SECCIÓN IZQUIERDA: DATOS DE EMPRESA ==========
+      doc.setFontSize(14);
+      doc.setFont(undefined, 'bold');
       doc.text(empresa.nombre, 20, 20);
-      doc.setFontSize(10);
-      doc.text(`Dirección: ${empresa.direccion}`, 20, 26);
-      doc.text(`Ciudad: ${empresa.ciudad}`, 20, 32);
+      
+      doc.setFontSize(9);
+      doc.setFont(undefined, 'normal');
+      doc.text(`Dirección: ${empresa.direccion}`, 20, 28);
+      doc.text(`Ciudad: ${empresa.ciudad}`, 20, 33);
       doc.text(`Contacto: ${empresa.contacto}`, 20, 38);
 
-      // Encabezado factura
-      doc.setFontSize(20);
-      doc.text("Factura de Venta", 105, 50, { align: 'center' });
+      // ========== TÍTULO CENTRADO ==========
+      doc.setFontSize(18);
+      doc.setFont(undefined, 'bold');
+      doc.text("Factura de Venta", 105, 55, { align: 'center' });
 
-      doc.setFontSize(12);
-      doc.text(`Cliente: ${datosFactura.cliente}`, 20, 60);
-      doc.text(`Fecha: ${new Date().toLocaleDateString()}`, 20, 70);
+      // ========== DATOS DEL CLIENTE ==========
+      doc.setFontSize(11);
+      doc.setFont(undefined, 'normal');
+      doc.text(`Cliente: ${datosFactura.cliente}`, 20, 68);
+      doc.text(`Fecha: ${new Date().toLocaleDateString()}`, 20, 75);
 
-      // Tabla de productos
+      // ========== TABLA DE PRODUCTOS ==========
       const columnas = ['Producto', 'Precio Ud.', 'Cantidad', 'Total'];
       const filas = datosFactura.productos.map(p => [
         p.nombre,
@@ -540,36 +546,87 @@ function generarPDF(datosFactura) {
       ]);
 
       doc.autoTable({
-        startY: 80,
+        startY: 85,
         head: [columnas],
         body: filas,
+        theme: 'striped',
+        headStyles: {
+          fillColor: [41, 128, 185],
+          textColor: 255,
+          fontStyle: 'bold',
+          halign: 'center'
+        },
+        styles: {
+          fontSize: 10,
+          cellPadding: 5
+        },
+        columnStyles: {
+          0: { halign: 'left' },
+          1: { halign: 'right' },
+          2: { halign: 'center' },
+          3: { halign: 'right' }
+        }
       });
 
-      // Totales
+      // ========== TOTALES ALINEADOS A LA DERECHA ==========
       const finalY = doc.lastAutoTable.finalY + 10;
-      doc.text(`Total: $${datosFactura.total.toFixed(2)}`, 150, finalY);
-      doc.text(`Abono: $${datosFactura.abono.toFixed(2)}`, 150, finalY + 10);
-      doc.text(`Saldo: $${datosFactura.saldo.toFixed(2)}`, 150, finalY + 20);
+      doc.setFontSize(11);
+      doc.setFont(undefined, 'normal');
+      
+      const totalX = 145;
+      doc.text(`Total:`, totalX, finalY);
+      doc.text(`$${datosFactura.total.toFixed(2)}`, 185, finalY, { align: 'right' });
+      
+      doc.text(`Abono:`, totalX, finalY + 7);
+      doc.text(`$${datosFactura.abono.toFixed(2)}`, 185, finalY + 7, { align: 'right' });
+      
+      doc.setFont(undefined, 'bold');
+      doc.setFontSize(12);
+      doc.text(`Saldo:`, totalX, finalY + 15);
+      doc.text(`$${datosFactura.saldo.toFixed(2)}`, 185, finalY + 15, { align: 'right' });
     }
 
-    // Logo en la parte superior derecha
+    // ========== LOGO EN ESQUINA SUPERIOR DERECHA ==========
     if (empresa.logo) {
       const img = new Image();
-      img.crossOrigin = "Anonymous"; // Permite cargar imágenes externas si el servidor lo permite
+      img.crossOrigin = "Anonymous";
       img.src = empresa.logo.startsWith('/') ? `${API_ORIGIN}${empresa.logo}` : empresa.logo;
+      
       img.onload = function() {
-        doc.addImage(img, 'PNG', 130, 10, 80, 70); // x, y, width, height
+        // Calcular dimensiones proporcionales
+        const maxWidth = 50;
+        const maxHeight = 40;
+        let width = img.width;
+        let height = img.height;
+        
+        // Ajustar proporcionalmente
+        if (width > maxWidth) {
+          height = (maxWidth / width) * height;
+          width = maxWidth;
+        }
+        if (height > maxHeight) {
+          width = (maxHeight / height) * width;
+          height = maxHeight;
+        }
+        
+        // Posicionar en esquina superior derecha
+        const xPos = 210 - width - 15; // 210mm ancho A4, -15mm margen derecho
+        const yPos = 10; // 10mm desde arriba
+        
+        doc.addImage(img, 'PNG', xPos, yPos, width, height);
         renderPDFContent();
         doc.save(`factura-${datosFactura.cliente}-${Date.now()}.pdf`);
       };
+      
       img.onerror = function() {
+        console.warn('⚠️ No se pudo cargar el logo, generando PDF sin imagen');
         renderPDFContent();
         doc.save(`factura-${datosFactura.cliente}-${Date.now()}.pdf`);
       };
-      return; // Espera a que cargue la imagen
+      return;
     }
 
-    // Si no hay logo, genera el resto del PDF
+    // Si no hay logo, genera el PDF directamente
     renderPDFContent();
     doc.save(`factura-${datosFactura.cliente}-${Date.now()}.pdf`);
 
